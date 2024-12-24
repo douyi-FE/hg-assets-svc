@@ -22,6 +22,7 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor'
 import { isDev, isMainProcess } from './global/env'
 import { setupSwagger } from './setup-swagger'
 import { LoggerService } from './shared/logger/logger.service'
+import './monogdb/connect'
 
 declare const module: any
 
