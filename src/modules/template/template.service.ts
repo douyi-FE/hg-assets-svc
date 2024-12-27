@@ -3,8 +3,7 @@ import TemplateCollect from '~/monogdb/models/template'
 
 @Injectable()
 export class TemplateService {
-  constructor(
-  ) {}
+  constructor() {}
 
   // excel相关
   async list(parmas) {
@@ -14,9 +13,10 @@ export class TemplateService {
   }
 
   async create(template: any) {
-    const { name, note, status, isBuildIn, file } = template
+    const { name, code, note, status, isBuildIn, file } = template
     return TemplateCollect.create({
       name,
+      code,
       note,
       status: Number(status),
       isBuildIn: isBuildIn === 'true',

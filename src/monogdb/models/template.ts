@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose'
 
 export interface ITemplate extends Document {
   name: string
+  code: string
   note: string
   status: number
   isBuildIn: boolean
@@ -11,6 +12,7 @@ export interface ITemplate extends Document {
 
 const templateSchema: Schema = new Schema({
   name: { type: String, required: true },
+  code: { type: String, required: true, unique: true },
   note: { type: String },
   isBuildIn: { type: Boolean, required: true },
   status: { type: Number, min: 0 },

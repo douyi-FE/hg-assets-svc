@@ -53,12 +53,14 @@ export class TemplateController {
 
     const data = await req.file()
     const name = (data.fields.name as any).value
+    const code = (data.fields.code as any).value
     const isBuildIn = (data.fields.isBuildIn as any).value
     const status = (data.fields.status as any).value
     const note = (data.fields.note as any).value
     const file = await (data.fields.file as any).toBuffer()
     const parmas = {
       name,
+      code,
       isBuildIn,
       note,
       status,
@@ -82,12 +84,14 @@ export class TemplateController {
     const data = await req.file()
     const id = (data.fields.id as any).value
     const name = (data.fields.name as any).value
+    const code = (data.fields.code as any).value
     const isBuildIn = (data.fields.isBuildIn as any).value
     const status = (data.fields.status as any).value
     const note = (data.fields.note as any).value
     const file = await (data.fields.file as any).toBuffer()
     const parmas = {
       name,
+      code,
       isBuildIn,
       note,
       status,
