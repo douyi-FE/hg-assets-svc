@@ -12,6 +12,12 @@ export class TemplateService {
     return formattedList
   }
 
+  // 获取excel的ejs
+  async excelEsj(id: string) {
+    const ejs = await TemplateCollect.findById(id)
+    return (ejs as any)._doc
+  }
+
   async create(template: any) {
     const { name, code, note, status, isBuildIn, file } = template
     return TemplateCollect.create({

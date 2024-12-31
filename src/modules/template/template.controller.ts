@@ -3,7 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { FastifyRequest } from 'fastify'
 import { ApiSecurityAuth } from '~/common/decorators/swagger.decorator'
 import { definePermission, Perm } from '../auth/decorators/permission.decorator'
-import { TemplateTypeQueryDto, TemplateTypeWordDto } from './template.dto'
+import { TemplateTypeQueryDto } from './template.dto'
 import { TemplateService } from './template.service'
 
 export const permissions = definePermission('system:template', {
@@ -42,6 +42,13 @@ export class TemplateController {
       }[isBuildIn]
     }
     return this.TemplateService.list(params)
+  }
+
+  @Get('/excel/ejs')
+  @ApiOperation({ summary: '获取模板ejs' })
+  async ejs(@Query() query: { id: string }) {
+    const { id = '' } = query
+    return this.TemplateService.excelEsj(id)
   }
 
   @Post('/excel/save')
@@ -105,52 +112,6 @@ export class TemplateController {
   @Perm(permissions.DELETE)
   async remove(@Req() req: FastifyRequest, @Query() query) {
     const result = await this.TemplateService.remove(query.id)
-    return {
-      result,
-    }
-  }
-
-  // word相关
-  @Get('word')
-  @ApiOperation({ summary: '获取word模板列表' })
-  @Perm(permissions.LIST)
-  async word(@Query() dto: TemplateTypeWordDto): Promise<any[]> {
-    const { name } = dto
-    const params: any = {}
-    if (name) {
-      params.name = name
-    }
-    return this.TemplateService.word(params)
-  }
-
-  @Post('/word/upload')
-  @ApiOperation({ summary: '上传word模板' })
-  @Perm(permissions.UPLOAD)
-  async uploadWord(@Req() req: FastifyRequest, @Body() body: any) {
-    if (!req.isMultipart())
-      throw new BadRequestException('Request is not multipart')
-    console.log('word上传', body, await req.file())
-    return {
-      id: 'dsfgdfgsdg',
-    }
-  }
-
-  @Get('/word/download')
-  @ApiOperation({ summary: '下载word模板' })
-  @Perm(permissions.DOWNLOAD)
-  async downloadWord(@Req() req: FastifyRequest, @Body() body: any) {
-    const data = '这是要下载的文件内容'
-    const buffer = Buffer.from(data, 'utf-8')
-    return {
-      file: buffer.toString('base64'),
-    }
-  }
-
-  @Delete('/word/delete')
-  @ApiOperation({ summary: '删除word模板' })
-  @Perm(permissions.DELETE)
-  async removeWord(@Req() req: FastifyRequest, @Query() query) {
-    const result = {}
     return {
       result,
     }

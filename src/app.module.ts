@@ -26,8 +26,8 @@ import { SystemModule } from './modules/system/system.module'
 import { TasksModule } from './modules/tasks/tasks.module'
 import { TemplateModule } from './modules/template/template.module'
 import { TemplateDataModule } from './modules/template-data/templateData.module'
+import { TemplateWordModule } from './modules/template-word/template-word.module'
 import { TodoModule } from './modules/todo/todo.module'
-
 import { ToolsModule } from './modules/tools/tools.module'
 import { UsersModule } from './modules/users-manage/users.module'
 import { DatabaseModule } from './shared/database/database.module'
@@ -76,6 +76,8 @@ import { SocketModule } from './socket/socket.module'
     TodoModule,
     // 模板管理module
     TemplateModule,
+    // word模板管理module
+    TemplateWordModule,
     // 模板数据管理
     TemplateDataModule,
     // 用户信息管理
