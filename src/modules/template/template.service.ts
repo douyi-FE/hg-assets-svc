@@ -44,13 +44,4 @@ export class TemplateService {
       result,
     }
   }
-
-  // word相关
-  async word(params) {
-    return [
-      {
-        name: 'dffff',
-      },
-    ]
-  }
 }

@@ -14,6 +14,7 @@ export const permissions = definePermission('system:template', {
   DELETE: 'delete',
   UPLOAD: 'upload',
   DOWNLOAD: 'download',
+  SAVE: 'save',
 } as const)
 
 @ApiTags('模板管理')

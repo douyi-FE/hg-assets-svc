@@ -24,6 +24,7 @@ import { NetdiskModule } from './modules/netdisk/netdisk.module'
 import { SseModule } from './modules/sse/sse.module'
 import { SystemModule } from './modules/system/system.module'
 import { TasksModule } from './modules/tasks/tasks.module'
+import { TemplateVersionModule } from './modules/tempalte-version/template-version.module'
 import { TemplateModule } from './modules/template/template.module'
 import { TemplateDataModule } from './modules/template-data/templateData.module'
 import { TemplateWordModule } from './modules/template-word/template-word.module'
@@ -84,6 +85,8 @@ import { SocketModule } from './socket/socket.module'
     UsersModule,
     // 内置模板管理
     BuildInModule,
+    // 模板版本管理
+    TemplateVersionModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
