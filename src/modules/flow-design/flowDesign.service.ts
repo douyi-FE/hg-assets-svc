@@ -5,8 +5,12 @@ import flowDesignCollect from '~/monogdb/models/flow-design'
 export class FlowDesignService {
   constructor() {}
 
-  async list() {
-    const list = await flowDesignCollect.find({})
+  async list(name: string) {
+    const list = await flowDesignCollect.find({
+      name: {
+        $regex: name,
+      },
+    })
     const formattedList = list.map((item: any) => ({ ...item._doc, _id: item._id.buffer.toString('hex') }))
     return formattedList
   }

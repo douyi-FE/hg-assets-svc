@@ -11,8 +11,9 @@ export class FlowDesignController {
 
   @Get('/list')
   @ApiOperation({ summary: '获取流程设计列表' })
-  async list() {
-    return this.flowDesignService.list()
+  async list(@Query() dto: any) {
+    const { name = '' } = dto
+    return this.flowDesignService.list(name)
   }
 
   @Get('/find')
