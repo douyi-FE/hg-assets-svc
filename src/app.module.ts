@@ -19,8 +19,10 @@ import { AuthModule } from './modules/auth/auth.module'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { RbacGuard } from './modules/auth/guards/rbac.guard'
 import { BuildInModule } from './modules/build-in-ejs/builtin.module'
+import { FlowDesignModule } from './modules/flow-design/flowDesign.module'
 import { HealthModule } from './modules/health/health.module'
 import { NetdiskModule } from './modules/netdisk/netdisk.module'
+import { OutputValueModule } from './modules/output-value/output-value.module'
 import { SseModule } from './modules/sse/sse.module'
 import { SystemModule } from './modules/system/system.module'
 import { TasksModule } from './modules/tasks/tasks.module'
@@ -87,6 +89,10 @@ import { SocketModule } from './socket/socket.module'
     BuildInModule,
     // 模板版本管理
     TemplateVersionModule,
+    // 报告生成
+    OutputValueModule,
+    // 流程设计
+    FlowDesignModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
