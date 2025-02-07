@@ -83,6 +83,12 @@ importers:
       axios:
         specifier: ^1.7.7
         version: 1.7.7
+      bpmn-engine:
+        specifier: ^23.0.2
+        version: 23.0.2(smqp@9.0.5)
+      bpmn-moddle:
+        specifier: ^9.0.1
+        version: 9.0.1
       bull:
         specifier: ^4.16.3
         version: 4.16.3
@@ -210,6 +216,9 @@ importers:
       '@nestjs/testing':
         specifier: ^10.4.4
         version: 10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)
+      '@types/bpmn-moddle':
+        specifier: ^5.1.11
+        version: 5.1.11
       '@types/cache-manager':
         specifier: ^4.0.6
         version: 4.0.6
@@ -278,6 +287,10 @@ importers:
         version: 5.5.4
 
 packages:
+
+  '@0dep/piso@2.4.0':
+    resolution: {integrity: sha512-M3KiPNsDb6wL3inpEgmnT22kaL1y/Po/DS0VhvdQJRNMIvmqVUf/BjwK/7D/oYTTzzghYAT7OS7qUesEL/POoQ==}
+    engines: {node: '>=14'}
 
   '@aduh95/viz.js@3.4.0':
     resolution: {integrity: sha512-KI2nVf9JdwWCXqK6RVf+9/096G7VWN4Z84mnynlyZKao2xQENW8WNEjLmvdlxS5X8PNWXFC1zqwm7tveOXw/4A==}
@@ -2065,6 +2078,9 @@ packages:
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
 
+  '@types/bpmn-moddle@5.1.11':
+    resolution: {integrity: sha512-YNVOQ+zMDVG9xv53PqlGDG/jKa0jMPNgK6HS4DFf0PRVP4sErKN1xRhGdya9H+0TX9QubAwVvxFbjWz9KskAMA==}
+
   '@types/cache-manager@4.0.6':
     resolution: {integrity: sha512-8qL93MF05/xrzFm/LSPtzNEOE1eQF3VwGHAcQEylgp5hDSTe41jtFwbSYAPfyYcVa28y1vYSjIt0c1fLLUiC/Q==}
 
@@ -2666,6 +2682,19 @@ packages:
   boxen@5.1.2:
     resolution: {integrity: sha512-9gYgQKXx+1nP8mP7CzFyaUARhg7D3n1dF/FnErWmu9l6JvGpNUN278h0aSb+QjoiKSWG+iZ3uHrcqk0qrY9RQQ==}
     engines: {node: '>=10'}
+
+  bpmn-elements@16.2.2:
+    resolution: {integrity: sha512-pXowYacnaUfiWrnfEmlypNqOC6cVSg+iiyymmbLp42KRMIHnBVvIZ4MV8VxnUxLEHup4UtSyuOGjLmfNxW/nng==}
+
+  bpmn-engine@23.0.2:
+    resolution: {integrity: sha512-MVMK00a+4PO7LrxCTUzwbT/f1U/tbRco+uvCXIe8l815qCpotAoAckC9CHIwcfYJAzlkmXCno40xgg5+ZXg/4A==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      smqp: '>=9'
+
+  bpmn-moddle@9.0.1:
+    resolution: {integrity: sha512-jO2P5RBx0cZCCd+imqhpNE5anttaYuGd71u76NEA/qMZwJSW1t5ETAtw9/E2InfiPU2w0TR8oxPyopJXRc9VQg==}
+    engines: {node: '>= 18'}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -5071,6 +5100,9 @@ packages:
     resolution: {integrity: sha512-VP79XUPxV2CigYP3jWwAUFSku2aKqBH7uTAapFWCBqutsbmDo96KY5o8uh6U+/YSIn5OxJnXp73beVkpqMIGhA==}
     engines: {node: '>=18'}
 
+  min-dash@4.2.2:
+    resolution: {integrity: sha512-qbhSYUxk6mBaF096B3JOQSumXbKWHenmT97cSpdNzgkWwGjhjhE/KZODCoDNhI2I4C9Cb6R/Q13S4BYkUSXoXQ==}
+
   min-indent@1.0.1:
     resolution: {integrity: sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==}
     engines: {node: '>=4'}
@@ -5222,6 +5254,20 @@ packages:
 
   mockdate@3.0.5:
     resolution: {integrity: sha512-iniQP4rj1FhBdBYS/+eQv7j1tadJ9lJtdzgOpvsOHng/GbcDh2Fhdeq+ZRldrPYdXvCyfFUmFeEwEGXZB5I/AQ==}
+
+  moddle-context-serializer@4.2.1:
+    resolution: {integrity: sha512-pjEdXBvktU7wep7sv12EGCojq2oYWba9D92b6k9UYeYJvQcpM8nAmgpnDtdkxCovPTEoCKYqUMUtCKeh5lh6GQ==}
+    peerDependencies:
+      bpmn-moddle: '>=6'
+
+  moddle-xml@11.0.0:
+    resolution: {integrity: sha512-L3Sseepfcq9Uy0iIfqEDTXSoYLva1Y/JGbN/4AMOeQ6cqbu8Ma/SDJIdOFm7smsAa64j2z3SwCGG3FIilQVnUg==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      moddle: '>= 6.2.0'
+
+  moddle@7.2.0:
+    resolution: {integrity: sha512-x1+JREThy7JBOBR3g2hbOnOfrlC/YAWXX9RzrSZS5HhqeuBly9H/PCtOBtcQs+Y2sjRAXF+WTNSgHvn8Uq+6Yw==}
 
   moment@2.30.1:
     resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
@@ -6072,6 +6118,10 @@ packages:
   sax@1.4.1:
     resolution: {integrity: sha512-+aWOz7yVScEGoKNd4PA10LZ8sk0A/z5+nXQG5giUO5rprX9jgYsTdov9qCchZiPIZezbZH+jRut8nPodFAX4Jg==}
 
+  saxen@10.0.0:
+    resolution: {integrity: sha512-RXsmWok/SAWqOG/f5ADEz51DN9WtZEzqih3e08ranldcaXekxjx8NBKjGh/y5hlowjo0JH/LekBu6gtPFD1G6g==}
+    engines: {node: '>= 18'}
+
   schema-utils@3.3.0:
     resolution: {integrity: sha512-pN/yOAvcC+5rQ5nERGuwrjLlYvLTbCibnZ1I7B1LaiAz9BRBlE9GMgE/eqV30P7aJQUf7Ddimy/RsbYO/GrVGg==}
     engines: {node: '>= 10.13.0'}
@@ -6194,6 +6244,9 @@ packages:
 
   slick@1.12.2:
     resolution: {integrity: sha512-4qdtOGcBjral6YIBCWJ0ljFSKNLz9KkhbWtuGvUyRowl1kxfuE1x/Z/aJcaiilpb3do9bl5K7/1h9XC5wWpY/A==}
+
+  smqp@9.0.5:
+    resolution: {integrity: sha512-g0GPAZXGSCxu0PcOd5St56WUWKy32WbyZTzULBOiFM8/CgJ8mUslx6ba31PosonVEm6lQJnG5YsgNnasBKM75A==}
 
   socket.io-adapter@2.5.5:
     resolution: {integrity: sha512-eLDQas5dzPgOWCk9GuuJC2lBqItuhKI4uxGgo9aIV7MYbk2h9Q6uULEh8WBzThoI7l+qU9Ast9fVUmkqPP9wYg==}
@@ -7196,6 +7249,8 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+
+  '@0dep/piso@2.4.0': {}
 
   '@aduh95/viz.js@3.4.0': {}
 
@@ -9206,6 +9261,8 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/node': 20.16.10
 
+  '@types/bpmn-moddle@5.1.11': {}
+
   '@types/cache-manager@4.0.6': {}
 
   '@types/connect@3.4.38':
@@ -9940,6 +9997,27 @@ snapshots:
       type-fest: 0.20.2
       widest-line: 3.1.0
       wrap-ansi: 7.0.0
+
+  bpmn-elements@16.2.2:
+    dependencies:
+      '@0dep/piso': 2.4.0
+      smqp: 9.0.5
+
+  bpmn-engine@23.0.2(smqp@9.0.5):
+    dependencies:
+      bpmn-elements: 16.2.2
+      bpmn-moddle: 9.0.1
+      debug: 4.3.7
+      moddle-context-serializer: 4.2.1(bpmn-moddle@9.0.1)
+      smqp: 9.0.5
+    transitivePeerDependencies:
+      - supports-color
+
+  bpmn-moddle@9.0.1:
+    dependencies:
+      min-dash: 4.2.2
+      moddle: 7.2.0
+      moddle-xml: 11.0.0(moddle@7.2.0)
 
   brace-expansion@1.1.11:
     dependencies:
@@ -13036,6 +13114,8 @@ snapshots:
 
   mimic-function@5.0.1: {}
 
+  min-dash@4.2.2: {}
+
   min-indent@1.0.1: {}
 
   minimatch@10.0.1:
@@ -13412,6 +13492,20 @@ snapshots:
       obliterator: 2.0.4
 
   mockdate@3.0.5: {}
+
+  moddle-context-serializer@4.2.1(bpmn-moddle@9.0.1):
+    dependencies:
+      bpmn-moddle: 9.0.1
+
+  moddle-xml@11.0.0(moddle@7.2.0):
+    dependencies:
+      min-dash: 4.2.2
+      moddle: 7.2.0
+      saxen: 10.0.0
+
+  moddle@7.2.0:
+    dependencies:
+      min-dash: 4.2.2
 
   moment@2.30.1: {}
 
@@ -14336,6 +14430,8 @@ snapshots:
 
   sax@1.4.1: {}
 
+  saxen@10.0.0: {}
+
   schema-utils@3.3.0:
     dependencies:
       '@types/json-schema': 7.0.15
@@ -14476,6 +14572,8 @@ snapshots:
 
   slick@1.12.2:
     optional: true
+
+  smqp@9.0.5: {}
 
   socket.io-adapter@2.5.5:
     dependencies:
