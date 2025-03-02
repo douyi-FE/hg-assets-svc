@@ -15,6 +15,7 @@ import { AllExceptionsFilter } from './common/filters/any-exception.filter'
 import { IdempotenceInterceptor } from './common/interceptors/idempotence.interceptor'
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor'
 import { TransformInterceptor } from './common/interceptors/transform.interceptor'
+import { ApplicationModule } from './modules/application/application.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { RbacGuard } from './modules/auth/guards/rbac.guard'
@@ -23,6 +24,7 @@ import { FlowDesignModule } from './modules/flow-design/flowDesign.module'
 import { HealthModule } from './modules/health/health.module'
 import { NetdiskModule } from './modules/netdisk/netdisk.module'
 import { OutputValueModule } from './modules/output-value/output-value.module'
+import { QuickNavModule } from './modules/quick-nav/quick-nav.module'
 import { SseModule } from './modules/sse/sse.module'
 import { SystemModule } from './modules/system/system.module'
 import { TasksModule } from './modules/tasks/tasks.module'
@@ -93,6 +95,10 @@ import { SocketModule } from './socket/socket.module'
     OutputValueModule,
     // 流程设计
     FlowDesignModule,
+    // 快捷导航管理
+    QuickNavModule,
+    // 应用管理
+    ApplicationModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },

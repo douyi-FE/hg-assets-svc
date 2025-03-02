@@ -1,6 +1,5 @@
-import { BadRequestException, Body, Controller, Delete, Get, Post, Put, Query, Req } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Post, Put, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { FastifyRequest } from 'fastify'
 import { ApiSecurityAuth } from '~/common/decorators/swagger.decorator'
 import { definePermission, Perm } from '../auth/decorators/permission.decorator'
 import { TemplateVersionService } from './template-version.service'
@@ -42,19 +41,13 @@ export class TemplateVersionController {
   @Post('save')
   @ApiOperation({ summary: '版本保存' })
   @Perm(permissions.SAVE)
-  async save(@Req() req: FastifyRequest): Promise<any> {
-    if (!req.isMultipart())
-      throw new BadRequestException('Request is not multipart')
-    const data = await req.file()
-    const templateId = (data.fields.templateId as any).value
-    const note = (data.fields.note as any).value
-    const type = (data.fields.type as any).value
-    const file = await (data.fields.file as any).toBuffer()
+  async save(@Body() body: any): Promise<any> {
+    const { templateId, note, type, sjs } = body
     const result = await this.TemplateVersionService.save({
       templateId,
       note,
       type,
-      file: file.toString('hex'),
+      file: sjs,
     }).then(() => {
       return {
         message: '保存成功',

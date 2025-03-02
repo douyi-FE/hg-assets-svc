@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Post, Query, Req } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Post, Query, Req } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { FastifyRequest } from 'fastify'
 import { ApiSecurityAuth } from '~/common/decorators/swagger.decorator'
@@ -15,6 +15,7 @@ export const permissions = definePermission('system:template', {
   UPLOAD: 'upload',
   DOWNLOAD: 'download',
   SAVE: 'save',
+  PUBLISH: 'publish',
 } as const)
 
 @ApiTags('模板管理')
@@ -45,6 +46,14 @@ export class TemplateController {
     return this.TemplateService.list(params)
   }
 
+  // 依据ids获取模板列表
+  @Get('list/ids')
+  @ApiOperation({ summary: '依据ids获取模板列表' })
+  @Perm(permissions.LIST)
+  async listByIds(@Query() query: { ids: string[] }) {
+    return this.TemplateService.listByIds(query.ids)
+  }
+
   @Get('/excel/ejs')
   @ApiOperation({ summary: '获取模板ejs' })
   async ejs(@Query() query: { id: string }) {
@@ -55,24 +64,16 @@ export class TemplateController {
   @Post('/excel/save')
   @ApiOperation({ summary: '新增excel模板' })
   @Perm(permissions.CREATE)
-  async create(@Req() req: FastifyRequest, @Body() body: any) {
-    if (!req.isMultipart())
-      throw new BadRequestException('Request is not multipart')
-
-    const data = await req.file()
-    const name = (data.fields.name as any).value
-    const code = (data.fields.code as any).value
-    const isBuildIn = (data.fields.isBuildIn as any).value
-    const status = (data.fields.status as any).value
-    const note = (data.fields.note as any).value
-    const file = await (data.fields.file as any).toBuffer()
+  async create(@Body() body: any) {
+    const { name, code, isBuildIn, status, note, initDataSource, sjs } = body
     const parmas = {
       name,
       code,
       isBuildIn,
       note,
       status,
-      file: file.toString('hex'),
+      initDataSource,
+      file: sjs,
     }
     const result = await this.TemplateService.create(parmas).catch((err) => {
       return err.message
@@ -85,25 +86,16 @@ export class TemplateController {
   @Post('/excel/update')
   @ApiOperation({ summary: '更新excel模板' })
   @Perm(permissions.CREATE)
-  async update(@Req() req: FastifyRequest, @Body() body: any) {
-    if (!req.isMultipart())
-      throw new BadRequestException('Request is not multipart')
-
-    const data = await req.file()
-    const id = (data.fields.id as any).value
-    const name = (data.fields.name as any).value
-    const code = (data.fields.code as any).value
-    const isBuildIn = (data.fields.isBuildIn as any).value
-    const status = (data.fields.status as any).value
-    const note = (data.fields.note as any).value
-    const file = await (data.fields.file as any).toBuffer()
+  async update(@Body() body: any) {
+    const { id, name, code, isBuildIn, status, note, initDataSource, sjs } = body
     const parmas = {
       name,
       code,
       isBuildIn,
       note,
       status,
-      file: file.toString('hex'),
+      initDataSource,
+      file: sjs,
     }
     return this.TemplateService.update(id, parmas)
   }
@@ -116,5 +108,13 @@ export class TemplateController {
     return {
       result,
     }
+  }
+
+  // 发布模板
+  @Post('/excel/publish')
+  @ApiOperation({ summary: '发布模板' })
+  @Perm(permissions.PUBLISH)
+  async publish(@Req() req: FastifyRequest, @Query() query: any) {
+    return this.TemplateService.publish(query.id)
   }
 }

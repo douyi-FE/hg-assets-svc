@@ -7,6 +7,7 @@ export interface ITemplate extends Document {
   note: string
   status: number
   isBuildIn: boolean
+  initDataSource: any
   file: string
 }
 
@@ -16,6 +17,7 @@ const templateSchema: Schema = new Schema({
   note: { type: String },
   isBuildIn: { type: Boolean, required: true },
   status: { type: Number, min: 0 },
+  initDataSource: { type: Object },
   file: { type: String },
 }, { timestamps: true })
 
