@@ -16,6 +16,7 @@ import { IdempotenceInterceptor } from './common/interceptors/idempotence.interc
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor'
 import { TransformInterceptor } from './common/interceptors/transform.interceptor'
 import { ApplicationModule } from './modules/application/application.module'
+import { ApplicationDataModule } from './modules/application-data/application-data.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { RbacGuard } from './modules/auth/guards/rbac.guard'
@@ -99,6 +100,8 @@ import { SocketModule } from './socket/socket.module'
     QuickNavModule,
     // 应用管理
     ApplicationModule,
+    // 应用数据管理
+    ApplicationDataModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },

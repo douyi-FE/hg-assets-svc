@@ -38,20 +38,33 @@ export class ApplicationService {
 
   // 发布应用
   async publishApplication(application: any) {
-    const result = await ApplicationCollect.findOne({ templateId: application.templateId })
-    if (result) {
-      return ApplicationCollect.updateOne(
-        { templateId: application.templateId },
-        { $set: {
-          name: application.name,
-          icon: application.icon,
-          description: application.description,
-          content: application.content,
-        } },
-      )
+    try {
+      const result = await ApplicationCollect.findOne({ templateId: application.templateId }).exec()
+
+      if (result) {
+        return await ApplicationCollect.updateOne(
+          { templateId: application.templateId },
+          {
+            $set: {
+              name: application.name,
+              icon: application.icon,
+              description: application.description,
+              content: application.content,
+              updateTime: new Date(),
+            },
+          },
+        ).exec()
+      }
+      else {
+        return await ApplicationCollect.create({
+          ...application,
+          updateTime: new Date(),
+        })
+      }
     }
-    else {
-      return ApplicationCollect.create(application)
+    catch (error) {
+      console.error('发布应用失败:', error)
+      throw error
     }
   }
 }
