@@ -21,8 +21,10 @@ import { AuthModule } from './modules/auth/auth.module'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { RbacGuard } from './modules/auth/guards/rbac.guard'
 import { BuildInModule } from './modules/build-in-ejs/builtin.module'
+import { FileStorageModule } from './modules/file-storage/fileStorage.module'
 import { FlowDesignModule } from './modules/flow-design/flowDesign.module'
 import { HealthModule } from './modules/health/health.module'
+import { InvoiceModule } from './modules/invoice/invoice.module'
 import { NetdiskModule } from './modules/netdisk/netdisk.module'
 import { OutputValueModule } from './modules/output-value/output-value.module'
 import { QuickNavModule } from './modules/quick-nav/quick-nav.module'
@@ -102,6 +104,10 @@ import { SocketModule } from './socket/socket.module'
     ApplicationModule,
     // 应用数据管理
     ApplicationDataModule,
+    // 开票管理
+    InvoiceModule,
+    // 文件存储管理
+    FileStorageModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
