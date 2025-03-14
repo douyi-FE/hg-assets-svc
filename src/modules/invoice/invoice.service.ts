@@ -30,14 +30,13 @@ export class InvoiceService {
   }
 
   // 新增开票数据
-  async addInvoiceData(invoiceData: any) {
-    try {
-      return await InvoiceCollect.create(invoiceData)
+  async addInvoiceData(applyCode: string, uid: string, invoiceData: any, status: string) {
+    // 依据applyCode查询是否存在
+    const exist = await InvoiceCollect.findOne({ applyCode }).exec()
+    if (exist) {
+      return InvoiceCollect.updateOne({ applyCode }, { $set: { uid, data: invoiceData, status } }).exec()
     }
-    catch (error) {
-      console.error('新增开票数据失败:', error)
-      throw error
-    }
+    return InvoiceCollect.create({ applyCode, uid, data: invoiceData, status })
   }
 
   // 依据项目编码更新开票数据
@@ -55,9 +54,9 @@ export class InvoiceService {
   }
 
   // 依据项目编码删除开票数据
-  async deleteInvoiceData(projectCode: string) {
+  async deleteInvoiceData(applyCode: string) {
     try {
-      return await InvoiceCollect.deleteOne({ projectCode }).exec()
+      return await InvoiceCollect.deleteOne({ applyCode }).exec()
     }
     catch (error) {
       console.error('删除开票数据失败:', error)

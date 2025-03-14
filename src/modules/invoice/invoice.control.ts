@@ -43,22 +43,12 @@ export class InvoiceController {
   @ApiOperation({ summary: '新增开票数据' })
   @Perm(permissions.CREATE)
   async addApplicationData(@Body() body: any) {
-    try {
-      const { invoiceData } = body
-      const result = await this.InvoiceService.addInvoiceData(invoiceData)
-      return {
-        code: 200,
-        message: '新增开票数据成功',
-        data: result,
-      }
-    }
-    catch (error) {
-      console.error('新增应用数据失败:', error)
-      return {
-        code: 500,
-        message: error.message || '新增应用数据失败',
-        data: null,
-      }
+    const { code, uid, invoiceData, status } = body
+    const result = await this.InvoiceService.addInvoiceData(code, uid, invoiceData, status)
+    return {
+      code: 200,
+      message: '新增开票数据成功',
+      data: result,
     }
   }
 
@@ -67,7 +57,7 @@ export class InvoiceController {
   @ApiOperation({ summary: '依据项目编码删除开票数据' })
   @Perm(permissions.DELETE)
   async deleteApplicationData(@Body() body: any) {
-    const { projectCode } = body
-    return this.InvoiceService.deleteInvoiceData(projectCode)
+    const { code } = body
+    return this.InvoiceService.deleteInvoiceData(code)
   }
 }

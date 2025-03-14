@@ -59,8 +59,9 @@ export function getSize(bytes: number, decimals = 2) {
 }
 
 export function fileRename(fileName: string) {
-  const name = fileName.split('.')[0]
   const extName = path.extname(fileName)
+  // 获取文件名（去掉扩展名后的部分）
+  const name = fileName.slice(0, -extName.length)
   const time = dayjs().format('YYYYMMDDHHmmSSS')
   return `${name}-${time}${extName}`
 }
