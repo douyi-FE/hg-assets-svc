@@ -22,6 +22,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { RbacGuard } from './modules/auth/guards/rbac.guard'
 import { BuildInModule } from './modules/build-in-ejs/builtin.module'
 import { FileStorageModule } from './modules/file-storage/fileStorage.module'
+import { FlowApprovalModule } from './modules/flow-approval/flow-approval.module'
 import { FlowDesignModule } from './modules/flow-design/flowDesign.module'
 import { HealthModule } from './modules/health/health.module'
 import { InvoiceModule } from './modules/invoice/invoice.module'
@@ -101,6 +102,8 @@ import { SocketModule } from './socket/socket.module'
     OutputValueModule,
     // 流程设计
     FlowDesignModule,
+    // 流程审批
+    FlowApprovalModule,
     // 快捷导航管理
     QuickNavModule,
     // 应用管理

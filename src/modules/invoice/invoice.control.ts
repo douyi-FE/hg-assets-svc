@@ -60,4 +60,13 @@ export class InvoiceController {
     const { code } = body
     return this.InvoiceService.deleteInvoiceData(code)
   }
+
+  // 提交发票申请，执行发票流程
+  @Post('apply')
+  @ApiOperation({ summary: '提交发票申请，执行发票流程' })
+  @Perm(permissions.APPLY)
+  async applyInvoice(@Body() body: any) {
+    const { code, flowId } = body
+    return this.InvoiceService.applyInvoice(code, flowId)
+  }
 }

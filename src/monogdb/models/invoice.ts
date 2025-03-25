@@ -5,6 +5,8 @@ export interface IInvoice extends Document {
   uid: string
   data: any
   status: 'draft' | 'pending' | 'approved'
+  processId: string
+  taskId: string
 }
 
 const invoiceSchema: Schema = new Schema({
@@ -24,6 +26,14 @@ const invoiceSchema: Schema = new Schema({
     type: String,
     required: true,
     enum: ['draft', 'pending', 'approved'],
+  },
+  processId: {
+    type: String,
+    required: false,
+  },
+  taskId: {
+    type: String,
+    required: false,
   },
 }, { timestamps: true })
 
