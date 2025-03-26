@@ -1,15 +1,15 @@
 import mongoose, { Document, Schema } from 'mongoose'
 
 export interface ITemplateData extends Document {
-  name: string
-  code: string
-  record: Map<string, any>
+  applicationName: string
+  templateId: string
+  templateName: string
 }
 
 const templateDataSchema: Schema = new Schema({
-  name: { type: String, required: true },
-  code: { type: String, required: true },
-  record: { type: Map }, // 允许其他字段
+  applicationName: { type: String, required: true },
+  templateId: { type: String, required: true },
+  templateName: { type: String, required: true },
 }, { timestamps: true })
 
 const templateDataCollect = mongoose.model<ITemplateData>('TemplateData', templateDataSchema, 'template_data')
