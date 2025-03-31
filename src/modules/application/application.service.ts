@@ -53,13 +53,15 @@ export class ApplicationService {
               updateTime: new Date(),
             },
           },
-        ).exec()
+        ).exec().then((res) => {
+          return 'success'
+        })
       }
       else {
         return await ApplicationCollect.create({
           ...application,
           updateTime: new Date(),
-        })
+        }).then(() => 'success')
       }
     }
     catch (error) {

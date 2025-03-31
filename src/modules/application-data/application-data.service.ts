@@ -26,7 +26,9 @@ export class ApplicationDataService {
         applicationData,
         updateTime: new Date(),
       }
-      return await ApplicationDataCollect.create(data)
+      return await ApplicationDataCollect.create(data).then((res) => {
+        return 'success'
+      })
     }
     catch (error) {
       console.error('新增应用数据失败:', error)
