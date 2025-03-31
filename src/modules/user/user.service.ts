@@ -72,6 +72,7 @@ export class UserService {
     const user: UserEntity = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.roles', 'role')
+      .leftJoinAndSelect('user.dept', 'dept')
       .where(`user.id = :uid`, { uid })
       .getOne()
 
