@@ -1,1 +1,0 @@
-import{ao as e}from"./index-D14EFSsd.js";function t(o){return e({url:"/demo/wzry/hero_list",method:"get",params:o})}function l(o){return e({url:"/demo/lol/hero_list",method:"get",params:o})}function n({id:o}){return e({url:`/demo/lol/hero_info/${o}`,method:"get"})}export{l as a,t as b,n as g};

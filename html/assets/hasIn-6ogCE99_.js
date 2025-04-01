@@ -1,1 +1,0 @@
-import{bv as e,bL as f,bM as h,bN as t,bO as g,bP as m}from"./index-D14EFSsd.js";function v(n,s){return n!=null&&s in Object(n)}function x(n,s,u){s=e(s,n);for(var a=-1,r=s.length,l=!1;++a<r;){var i=f(s[a]);if(!(l=n!=null&&u(n,i)))break;n=n[i]}return l||++a!=r?l:(r=n==null?0:n.length,!!r&&h(r)&&t(i,r)&&(g(n)||m(n)))}function P(n,s){return n!=null&&x(n,s,v)}export{P as h};

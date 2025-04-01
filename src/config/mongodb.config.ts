@@ -4,7 +4,7 @@ export const mongDBRegToken = 'mongDB'
 
 export const mongDBConfig = {
   type: 'mongodb',
-  host: env('DB_MONGODB_URL', 'localhost'), // MongoDB 连接 URL
+  host: env('DB_MONGODB_URL', '127.0.0.1'), // MongoDB 连接 URL
   port: envNumber('DB_MONGODB_PORT', 27017),
   database: env('DB_MONGODB_DATABASE'), // 数据库名称
 }

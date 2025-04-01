@@ -1,1 +1,0 @@
-import{d as o,n,q as a,v as s,b as r,a6 as p}from"./index-D14EFSsd.js";const c=o({name:"DemosNestedRoutesTwo",__name:"route-two",setup(u){return(m,e)=>{const t=p;return a(),n("div",null,[e[0]||(e[0]=s("div",null,"路由二",-1)),r(t)])}}});export{c as default};
