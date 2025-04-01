@@ -13,9 +13,9 @@ export async function initAllFlowApprovalApply() {
   const allFlowApprovalApply = await getAllFlowApprovalApply()
   console.log('allFlowApprovalApply', allFlowApprovalApply)
   allFlowApprovalApply.forEach(async (item) => {
-    const { processId, taskId, applyCode } = item
-    // const bpmnXml = await flowDesignCollect.findOne({ _id: processId }).exec()
-    // const { nodes, flows } = await createProcessEngine(item.bpmnXml, item.processId)
+    // const { processId, taskId, applyCode, flowId } = item
+    // const bpmnXml = await flowDesignCollect.findOne({ _id: flowId }).exec()
+    // const { nodes, flows } = await createProcessEngine(item.bpmnXml, item.processId, taskId)
     // console.log('nodes', nodes)
     // console.log('flows', flows)
   })

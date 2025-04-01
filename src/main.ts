@@ -47,7 +47,7 @@ async function bootstrap() {
 
   app.enableCors({ origin: '*', credentials: true })
   app.setGlobalPrefix(globalPrefix)
-  app.useStaticAssets({ root: path.join(__dirname, '..', 'public') })
+  app.useStaticAssets({ root: [path.join(__dirname, '..', 'public'), path.join(__dirname, '..', 'html')] })
   // Starts listening for shutdown hooks
   !isDev && app.enableShutdownHooks()
 

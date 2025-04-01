@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="referrer" content="origin" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="user-scalable=yes" />
+    <title>弘庚综合管理系统</title>
+    <link rel="stylesheet" type="text/css" href="/bootstrap.min.css" />
+    <link
+      href="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets/styles/gc.spread.sheets.excel2013white.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-designer/styles/gc.spread.sheets.designer.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets/dist/gc.spread.sheets.all.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-shapes/dist/gc.spread.sheets.shapes.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-charts/dist/gc.spread.sheets.charts.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-slicers/dist/gc.spread.sheets.slicers.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-print/dist/gc.spread.sheets.print.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-barcode/dist/gc.spread.sheets.barcode.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-pdf/dist/gc.spread.sheets.pdf.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-pivot-addon/dist/gc.spread.pivot.pivottables.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-excelio/dist/gc.spread.excelio.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-io/dist/gc.spread.sheets.io.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-resources-zh/dist/gc.spread.sheets.resources.zh.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-designer-resources-cn/dist/gc.spread.sheets.designer.resource.cn.min.js"></script>
+    <script src="https://cdn.grapecity.com.cn/SpreadJS/package-contents/17.1.9/spread-sheets-designer/dist/gc.spread.sheets.designer.all.min.js"></script>
+
+    <!-- 文件预览依赖 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.1.15/dist/docx-preview.js"></script>
+    <script type="module" crossorigin src="/assets/index-D14EFSsd.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D_QCx1JZ.css">
+  </head>
+
+  <body>
+    <div id="app"></div>
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        (i[r] =
+          i[r] ||
+          function () {
+            (i[r].q = i[r].q || []).push(arguments);
+          }),
+          (i[r].l = 1 * new Date());
+        (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m);
+      })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+      ga('create', 'UA-98623245-5', { allowAnchor: true });
+      ga('send', 'pageview', { page: location.pathname + location.search + location.hash });
+      GC.Spread.Sheets.LicenseKey =
+        'www.hgpmc.cn,268458914327286#B1zaNRmUMhWW7JHOshkczZnSp9mdZREb9dHcGdnZKp4Q9VHSHh4U7k7YOZncOd4RK9WSHRnUFR7avMDZhp7ZuhjWl3CbQpFTzl6TTh7KRRVWoV4TDNHWRlWUnNEV72mcs3CdY36Vs9WdPR5TQV5dXNEdUVDUFtkVD9GOnZzbjNVTFNWdZ3WQvQWYkZkdahnM6dTNBJzTxUWY6gGeKVTe52yc6cXVGtmM6w6MopWahpVaMVjRBVmeiVGdwFWNiVUTnN7TDZjbnJmN6AVUvkUdC3kSoFTdJt6SPJTajZGauN6TvJDTsRXQXFUbUNnVO5EM48Eeht6NJdlI0IyUiwiIEhzM7gjR6YjI0ICSiwyMzEjMyQzM4ATM0IicfJye35XX3JSVBtUUiojIDJCLicTMuYHITpEIkFWZyB7UiojIOJyebpjIkJHUiwiI8EzM5EDMgUTM7ADNyAjMiojI4J7QiwiIuNmLj5GcnhmL7d7diojIz5GRiwiI8+Y9sWY9QmZ0Jyp9Aqo9Re093OI0/699eeb9PuI0iojIh94QiwiI6gjM7IzM4ETO8UDN8YjMiojIklkIs4XXbpjInxmZiwSZzxWYmpjIyNHZisnOiwmbBJye0ICRiwiI34zd74kU7J4Z7NkQORzRxQ5U9NXNNZDMvAlVuxEc584cJdWY5p6dkdUW8V4KXdkdLJTdPFnWtpVV4QVUkFEVqBXNMRkUPRzLtpnZYlGV8FDUYVnWilHbhlmVYZWVU3IVKZ';
+      GC.Spread.Sheets.Designer.LicenseKey =
+        'www.hgpmc.cn,762163122851431#B1dRjMCVFMNJmdHZnRWBFVMlkYFJjSwJEV6M6YlJkVDJDUShGTrolRhJkSsJVZBdleoZXTHp5Rul7cYR5LNdDOkZVZYhXNPVXbIFzRXpUNYlzdVR7c7AzRl3ie7lzTHRFUo9EMS54M9FzUiNnNzQjYUZneWJnYWRVRkBXN98kdmNUVRdjWOdVdr8mdEhHR6M7RXl5VJJzcR3mNt9GVzcTTnlFVxR5LUJGOPNERz5kewcVOGdVOCJzcsxkQoljTyMFSyVUW5ZzazBzb7wWTDJ6NwsiM5Q7bhh6LGhXTzFXVl96Q5IUOh9kcXh7YhpHU6VUTiojITJCLiEkMxQDM7EENiojIIJCLyIzNwQTN5MjM0IicfJye#4Xfd5nITdlM4IiOiMkIsIyNx8idg86bkRWQtIXZudWazVGRtMlSkFWZyB7UiojIOJyebpjIkJHUiwiI9EzM5EDMgUTM7ADNyAjMiojI4J7QiwiIuNmLj5GcnhmL7d7diojIz5GRiwiI8+Y9sWY9QmZ0Jyp9Aqo9Re093OI0/699eeb9PuI0iojIh94QiwiIxMDNxUDOyITMzYTMyYzNiojIklkI1pjIEJCLi4TP7dWNJJXV8IGdwBVb4VHdHhTVYFlYsZlNZVHOC3ScGlzRVRzMkZjcz2GUuNHRxZWcLRUTwYHOl9WbVZEM5J5R7VnWXNUT8dEOodWQ5w6dOZHUO3mUykzU5Qndsl7YolWcPZHU3J4L';
+    </script>
+  </body>
+  <script src="/modal.min.js"></script>
+</html>
