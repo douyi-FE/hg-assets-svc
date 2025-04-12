@@ -8,8 +8,12 @@ export class ApplicationDataService {
   // 依据userId与templateId获取应用数据
   async getApplicationDataByUserId(query: any) {
     try {
-      const result = await ApplicationDataCollect.findOne(query).exec()
-      return result ? result.toObject() : null
+      const results = await ApplicationDataCollect
+        .find(query)
+        .sort({ updateTime: -1 })
+        .limit(1)
+        .exec()
+      return results[0] ? results[0].toObject() : null
     }
     catch (error) {
       console.error('获取应用数据失败:', error)
@@ -18,10 +22,11 @@ export class ApplicationDataService {
   }
 
   // 依据userId与templateId新增应用数据
-  async addApplicationData(userId: string, templateId: string, applicationData: any) {
+  async addApplicationData(userId: string, templateId: string, applicationData: any, deptId: number) {
     try {
       const data = {
         userId,
+        deptId,
         templateId,
         applicationData,
         updateTime: new Date(),

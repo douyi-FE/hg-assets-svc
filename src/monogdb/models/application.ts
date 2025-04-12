@@ -7,6 +7,7 @@ export interface IApplication extends Document {
   name: string
   icon: string
   description: string
+  initDataSource: any
 }
 
 const applicationSchema: Schema = new Schema({
@@ -16,6 +17,7 @@ const applicationSchema: Schema = new Schema({
   name: { type: String, required: true },
   icon: { type: String, required: false },
   description: { type: String, required: false },
+  initDataSource: { type: Object, required: false },
 }, { timestamps: true })
 
 const ApplicationCollect = mongoose.model<IApplication>('Application', applicationSchema, 'application')
