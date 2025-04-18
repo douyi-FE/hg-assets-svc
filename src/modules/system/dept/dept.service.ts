@@ -131,4 +131,14 @@ export class DeptService {
 
     return deptTree
   }
+
+  /**
+   * 根据用户部门，获取所有子部门
+   */
+  async getSubDepts(query: any) {
+    const { deptId } = query
+    const dept = await this.deptRepository.findOneBy({ id: deptId })
+    const subDepts = await this.deptRepository.findDescendantsTree(dept)
+    return subDepts
+  }
 }

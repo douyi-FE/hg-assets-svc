@@ -18,6 +18,7 @@ export class TemplateAttachController {
       const res = await this.templateAttachService.upload(file)
       result.push(res)
     }
+    return 'success'
   }
 
   @Get('/attach/download')

@@ -37,6 +37,13 @@ export class DeptController {
     return this.deptService.getDeptTree(uid, dto)
   }
 
+  @Get('subDepts')
+  @ApiOperation({ summary: '根据用户部门，获取所有子部门' })
+  @Perm(permissions.READ)
+  async subDepts(@Query() query: any) {
+    return this.deptService.getSubDepts(query)
+  }
+
   @Post()
   @ApiOperation({ summary: '创建部门' })
   @Perm(permissions.CREATE)
