@@ -16,11 +16,10 @@ export class FlowDesignService {
   }
 
   async find(id: string) {
-    const list = await flowDesignCollect.find({
+    const list = await flowDesignCollect.findOne({
       _id: id,
     })
-    const formattedList = list.map((item: any) => ({ ...item._doc, _id: item._id.buffer.toString('hex') }))
-    return formattedList
+    return list
   }
 
   async save(id: string, name: string, xml: string, note: string) {

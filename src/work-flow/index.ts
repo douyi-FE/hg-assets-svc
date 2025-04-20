@@ -6,7 +6,7 @@ import { InstanceService } from './services/instance.service'
 /**
  * 系统初始化流程
  */
-async function bootstrap() {
+export async function bootstrap(name: string, xml: string) {
   // 初始化核心组件
   const engine = new BpmnEngineWrapper()
   const definitionRepo = new ProcessDefinitionRepository()
@@ -24,11 +24,8 @@ async function bootstrap() {
     // 正确调用创建方法
     const definition = await definitionRepo.create({
       deployedAt: new Date(),
-      name: '订单处理流程',
-      bpmnXml: `<?xml version="1.0" encoding="UTF-8"?>
-        <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL">
-          <bpmn:process id="Process_1" />
-        </bpmn:definitions>`,
+      name,
+      bpmnXml: xml,
     })
 
     // 启动实例（现在可以正确获取id）
@@ -45,5 +42,8 @@ async function bootstrap() {
   }
 }
 
-// 启动系统
-bootstrap().catch(console.error)
+// // 启动系统
+// bootstrap('订单处理流程', `<?xml version="1.0" encoding="UTF-8"?>
+//         <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL">
+//           <bpmn:process id="Process_1" />
+//         </bpmn:definitions>`).catch(console.error)

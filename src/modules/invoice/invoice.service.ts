@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { createProcessEngine } from '~/flow/bpmn'
 import flowDesignCollect from '~/monogdb/models/flow-design'
 import InvoiceCollect from '~/monogdb/models/invoice'
 
@@ -77,16 +76,11 @@ export class InvoiceService {
 
       // 创建流程引擎
       const bpmnXmr = await flowDesignCollect.findOne({ _id: flowId }).exec()
-      const { processId, currentNode } = await createProcessEngine(bpmnXmr.xml, exist.processId, exist.taskId).then((res) => {
-        return res
-      })
 
-      return await InvoiceCollect.updateOne({ applyCode }, { $set: { status: 'pending', processId, taskId: currentNode.id } }).exec().then((res) => {
+      return await InvoiceCollect.updateOne({ applyCode }, { $set: { status: 'pending' } }).exec().then((res) => {
         return {
           ...res,
           applyCode,
-          processId,
-          taskId: currentNode.id,
         }
       })
     }

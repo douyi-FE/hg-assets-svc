@@ -167,6 +167,9 @@ importers:
       pm2:
         specifier: ^6.0.5
         version: 6.0.5
+      proper-lockfile:
+        specifier: ^4.1.2
+        version: 4.1.2
       qiniu:
         specifier: ^7.13.0
         version: 7.13.0
@@ -6056,6 +6059,9 @@ packages:
   propagating-hammerjs@1.5.0:
     resolution: {integrity: sha512-3PUXWmomwutoZfydC+lJwK1bKCh6sK6jZGB31RUX6+4EXzsbkDZrK4/sVR7gBrvJaEIwpTVyxQUAd29FKkmVdw==}
 
+  proper-lockfile@4.1.2:
+    resolution: {integrity: sha512-TjNPblN4BwAWMXU8s9AEz4JmQxnD1NNL7bNOY/AKUzyamc379FWASUhc/K1pL2noVb+XmZKLL68cjzLsiOAMaA==}
+
   proto-list@1.2.4:
     resolution: {integrity: sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==}
 
@@ -6295,6 +6301,10 @@ packages:
   ret@0.4.3:
     resolution: {integrity: sha512-0f4Memo5QP7WQyUEAYUO3esD/XjOc3Zjjg5CPsAq1p8sIu0XPeMbHJemKA0BO7tV0X7+A0FoEpbmHXWxPyD3wQ==}
     engines: {node: '>=10'}
+
+  retry@0.12.0:
+    resolution: {integrity: sha512-9LkiTwjUh6rT555DtE9rTX+BKByPfrMzEAtnlEtdEwr3Nkffwiihqe2bWADg+OQRjt9gl6ICdmB/ZFDCGAtSow==}
+    engines: {node: '>= 4'}
 
   reusify@1.0.4:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
@@ -14697,6 +14707,12 @@ snapshots:
     dependencies:
       hammerjs: 2.0.8
 
+  proper-lockfile@4.1.2:
+    dependencies:
+      graceful-fs: 4.2.11
+      retry: 0.12.0
+      signal-exit: 3.0.7
+
   proto-list@1.2.4:
     optional: true
 
@@ -15007,6 +15023,8 @@ snapshots:
       signal-exit: 4.1.0
 
   ret@0.4.3: {}
+
+  retry@0.12.0: {}
 
   reusify@1.0.4: {}
 

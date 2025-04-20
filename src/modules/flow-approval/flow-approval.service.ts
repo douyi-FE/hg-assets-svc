@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common'
-import { getProcessAllNodes } from '~/flow/bpmn'
 
 @Injectable()
 export class FlowApprovalService {
   constructor() {}
 
   async getFlowApprovalInfo(processId: string) {
-    const { nodes, flows } = await getProcessAllNodes(processId)
-    console.log('nodes', nodes)
-    console.log('flows', flows)
     return {
       applyCode: '1234567890',
       result: [

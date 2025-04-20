@@ -26,6 +26,7 @@ import { FlowApprovalModule } from './modules/flow-approval/flow-approval.module
 import { FlowDesignModule } from './modules/flow-design/flowDesign.module'
 import { HealthModule } from './modules/health/health.module'
 import { InvoiceModule } from './modules/invoice/invoice.module'
+import { LeaveModule } from './modules/leave/leave.module'
 import { NetdiskModule } from './modules/netdisk/netdisk.module'
 import { OutputValueModule } from './modules/output-value/output-value.module'
 import { QuickNavModule } from './modules/quick-nav/quick-nav.module'
@@ -112,6 +113,8 @@ import { SocketModule } from './socket/socket.module'
     ApplicationDataModule,
     // 开票管理
     InvoiceModule,
+    // 请假管理
+    LeaveModule,
     // 文件存储管理
     FileStorageModule,
   ],

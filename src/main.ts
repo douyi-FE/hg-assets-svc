@@ -19,7 +19,6 @@ import { AppModule } from './app.module'
 import { fastifyApp } from './common/adapters/fastify.adapter'
 import { RedisIoAdapter } from './common/adapters/socket.adapter'
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor'
-import { initAllFlowApprovalApply } from './flow'
 import { isDev, isMainProcess } from './global/env'
 import { setupSwagger } from './setup-swagger'
 import { LoggerService } from './shared/logger/logger.service'
@@ -93,8 +92,6 @@ async function bootstrap() {
 
     if (isDev)
       logger.log(`[${prefix + pid}] OpenAPI: ${url}/api-docs`)
-
-    initAllFlowApprovalApply()
   })
 
   if (module.hot) {
