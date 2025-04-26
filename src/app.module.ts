@@ -26,6 +26,7 @@ import { FlowApprovalModule } from './modules/flow-approval/flow-approval.module
 import { FlowDesignModule } from './modules/flow-design/flowDesign.module'
 import { HealthModule } from './modules/health/health.module'
 import { InvoiceModule } from './modules/invoice/invoice.module'
+import { ProjectModule } from './modules/project/project.module'
 import { LeaveModule } from './modules/leave/leave.module'
 import { NetdiskModule } from './modules/netdisk/netdisk.module'
 import { OutputValueModule } from './modules/output-value/output-value.module'
@@ -117,6 +118,8 @@ import { SocketModule } from './socket/socket.module'
     LeaveModule,
     // 文件存储管理
     FileStorageModule,
+    // 项目管理
+    ProjectModule
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
