@@ -21,15 +21,17 @@ import { AuthModule } from './modules/auth/auth.module'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { RbacGuard } from './modules/auth/guards/rbac.guard'
 import { BuildInModule } from './modules/build-in-ejs/builtin.module'
+import { DeviceModule } from './modules/device/device.module'
+import { EngineerModule } from './modules/engineer/engineer.module'
 import { FileStorageModule } from './modules/file-storage/fileStorage.module'
 import { FlowApprovalModule } from './modules/flow-approval/flow-approval.module'
 import { FlowDesignModule } from './modules/flow-design/flowDesign.module'
 import { HealthModule } from './modules/health/health.module'
 import { InvoiceModule } from './modules/invoice/invoice.module'
-import { ProjectModule } from './modules/project/project.module'
 import { LeaveModule } from './modules/leave/leave.module'
 import { NetdiskModule } from './modules/netdisk/netdisk.module'
 import { OutputValueModule } from './modules/output-value/output-value.module'
+import { ProjectModule } from './modules/project/project.module'
 import { QuickNavModule } from './modules/quick-nav/quick-nav.module'
 import { SseModule } from './modules/sse/sse.module'
 import { SystemModule } from './modules/system/system.module'
@@ -119,7 +121,11 @@ import { SocketModule } from './socket/socket.module'
     // 文件存储管理
     FileStorageModule,
     // 项目管理
-    ProjectModule
+    ProjectModule,
+    // 装置管理
+    DeviceModule,
+    // 工程管理
+    EngineerModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
