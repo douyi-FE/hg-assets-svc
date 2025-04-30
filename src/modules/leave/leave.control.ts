@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { uniqueId } from 'lodash'
 import { ApiSecurityAuth } from '~/common/decorators/swagger.decorator'
-import { bootstrap } from '~/work-flow'
+import { initializeFlow } from '~/work-flow'
 import { definePermission, Perm } from '../auth/decorators/permission.decorator'
 import { FlowDesignService } from '../flow-design/flowDesign.service'
 import { LeaveService } from './leave.service'
@@ -35,18 +35,18 @@ export class LeaveController {
   async addLeaveData(@Body() leaveData: any) {
     const applyCode = `LEAVE-${uniqueId()}`
     const approverStatus = 'pending'
-    return this.leaveService.addLeaveData({
-      ...leaveData,
-      applyCode,
-      approverStatus,
-    }).then((res) => {
-      const flowDesignCollect = new FlowDesignService()
-      flowDesignCollect.find('680202abe57d75b4c219aeca').then((res: any) => {
-        bootstrap('请假流程', res.xml).then((res) => {
-          console.log(res)
-        })
+    const { flowId, ...rest } = leaveData
+    const flowDesignCollect = new FlowDesignService()
+    flowDesignCollect.find(flowId).then((res: any) => {
+      initializeFlow('请假流程', res._doc.xml).then((res) => {
+        console.log(res)
       })
-      return res
+    }).then((res) => {
+      return this.leaveService.addLeaveData({
+        ...rest,
+        applyCode,
+        approverStatus,
+      })
     })
   }
 

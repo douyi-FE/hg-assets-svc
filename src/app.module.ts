@@ -25,6 +25,7 @@ import { DeviceModule } from './modules/device/device.module'
 import { EngineerModule } from './modules/engineer/engineer.module'
 import { FileStorageModule } from './modules/file-storage/fileStorage.module'
 import { FlowApprovalModule } from './modules/flow-approval/flow-approval.module'
+import { FlowBindModule } from './modules/flow-bind/flow-bind.module'
 import { FlowDesignModule } from './modules/flow-design/flowDesign.module'
 import { HealthModule } from './modules/health/health.module'
 import { InvoiceModule } from './modules/invoice/invoice.module'
@@ -126,6 +127,8 @@ import { SocketModule } from './socket/socket.module'
     DeviceModule,
     // 工程管理
     EngineerModule,
+    // 流程绑定管理
+    FlowBindModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },

@@ -16,7 +16,7 @@ export class FileStore<T extends { id: string }> {
   }
 
   constructor(storageType: 'definitions' | 'instances') {
-    this.storagePath = path.resolve(__dirname, `../../../storage/${storageType}`)
+    this.storagePath = path.resolve(__dirname, `./storage/${storageType}`)
     this.cache = new LRUCache<string, T>({
       max: 100, // 最大缓存条目
       ttl: 60_000, // 缓存有效期（毫秒）
@@ -41,12 +41,28 @@ export class FileStore<T extends { id: string }> {
    * @param entity 包含id属性的完整实体对象
    */
   async save(entity: T): Promise<void> {
+    try {
+      await fs.access(this.storagePath)
+    }
+    catch {
+      await fs.mkdir(this.storagePath, { recursive: true })
+    }
     const filePath = path.join(this.storagePath, `${entity.id}.json`)
+
+    // 确保文件存在
+    try {
+      await fs.access(filePath)
+    }
+    catch {
+      await fs.writeFile(filePath, '{}')
+    }
+
     const release = await lockfile.lock(filePath)
 
     try {
       const data = JSON.stringify(entity, null, 2)
       await fs.writeFile(filePath, data)
+      this.cache.set(entity.id, entity)
     }
     finally {
       await release()

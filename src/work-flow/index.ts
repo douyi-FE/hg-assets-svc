@@ -6,7 +6,7 @@ import { InstanceService } from './services/instance.service'
 /**
  * 系统初始化流程
  */
-export async function bootstrap(name: string, xml: string) {
+export async function initializeFlow(name: string, xml: string) {
   // 初始化核心组件
   const engine = new BpmnEngineWrapper()
   const definitionRepo = new ProcessDefinitionRepository()
