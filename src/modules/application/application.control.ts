@@ -37,6 +37,13 @@ export class ApplicationController {
     return this.ApplicationService.getApplicationById(id)
   }
 
+  @Get('/name/:name')
+  @ApiOperation({ summary: '获取应用详情' })
+  @Perm(permissions.READ)
+  async getApplicationByName(@Param('name') name: string) {
+    return this.ApplicationService.getApplicationByName(name)
+  }
+
   // 新增应用
   @Post('create')
   @ApiOperation({ summary: '新增应用' })

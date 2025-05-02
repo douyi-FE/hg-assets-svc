@@ -33,6 +33,7 @@ import { LeaveModule } from './modules/leave/leave.module'
 import { NetdiskModule } from './modules/netdisk/netdisk.module'
 import { OutputValueModule } from './modules/output-value/output-value.module'
 import { ProjectModule } from './modules/project/project.module'
+import { ProjectDeviceModule } from './modules/project-device/project-device.module'
 import { QuickNavModule } from './modules/quick-nav/quick-nav.module'
 import { SseModule } from './modules/sse/sse.module'
 import { SystemModule } from './modules/system/system.module'
@@ -123,6 +124,8 @@ import { SocketModule } from './socket/socket.module'
     FileStorageModule,
     // 项目管理
     ProjectModule,
+    // 项目设备管理
+    ProjectDeviceModule,
     // 装置管理
     DeviceModule,
     // 工程管理

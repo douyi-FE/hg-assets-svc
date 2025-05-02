@@ -20,6 +20,15 @@ export class ApplicationService {
     return { ...application.toObject(), _id: application._id.toString() }
   }
 
+  // 获取应用详情
+  async getApplicationByName(name: string) {
+    const application = await ApplicationCollect.findOne({ name })
+    if (!application) {
+      throw new Error('应用不存在')
+    }
+    return { ...application.toObject(), _id: application._id.toString() }
+  }
+
   // 依据id更新应用
   async updateApplicationById(id: string, application: any) {
     return ApplicationCollect.updateOne({ templateId: id }, { $set: { content: application.content } })
