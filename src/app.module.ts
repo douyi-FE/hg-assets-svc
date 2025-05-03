@@ -42,6 +42,7 @@ import { TemplateVersionModule } from './modules/tempalte-version/template-versi
 import { TemplateModule } from './modules/template/template.module'
 import { TemplateAttachModule } from './modules/template-attach/templateAttach.module'
 import { TemplateDataModule } from './modules/template-data/templateData.module'
+import { TemplateFieldDictModule } from './modules/template-field-dict/template-field-dict.module'
 import { TemplateWordModule } from './modules/template-word/template-word.module'
 import { TodoModule } from './modules/todo/todo.module'
 import { ToolsModule } from './modules/tools/tools.module'
@@ -96,6 +97,8 @@ import { SocketModule } from './socket/socket.module'
     TemplateWordModule,
     // 模板数据管理
     TemplateDataModule,
+    // 模板字段字典管理
+    TemplateFieldDictModule,
     // 模板附件管理
     TemplateAttachModule,
     // 用户信息管理

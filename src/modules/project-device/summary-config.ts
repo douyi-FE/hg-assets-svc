@@ -75,7 +75,9 @@ export function getSummaryData(tableData: any[], classColumns: string[], summary
     const summaryItem = group.reduce((acc, curr) => {
       Object.keys(acc).forEach((column) => {
         if (summaryColumns.includes(column)) {
-          acc[column] = acc[column] + curr[column]
+          if (acc !== curr) {
+            acc[column] += curr[column]
+          }
         }
       })
       return acc
