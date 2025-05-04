@@ -65,4 +65,43 @@ export class ApplicationDataService {
       throw error
     }
   }
+
+  // 查询模板字段字典
+  async getTemplateFieldDict(query: any) {
+    try {
+      const { templateId, dictName } = query
+      const results = await ApplicationDataCollect
+        .find({ templateId })
+        .sort({ updateTime: -1 })
+        .limit(1)
+        .exec()
+      const dictData = results[0] ? results[0].toObject() : null
+      if (dictData) {
+        const { applicationData } = dictData
+        if (applicationData) {
+          let filteredDictData = []
+          Object.keys(applicationData).forEach((key) => {
+            if (key.startsWith('table')) {
+              filteredDictData = applicationData[key]
+            }
+          })
+          if (filteredDictData) {
+            if (dictName) {
+              // 从 filteredDictData 数组中根据 ‘table_name’ 属性过滤出对应的字典数据
+              const dictData = filteredDictData.filter((item: any) => {
+                return item['模板名称'] === dictName
+              })
+              return dictData
+            }
+            return filteredDictData
+          }
+        }
+      }
+      return []
+    }
+    catch (error) {
+      console.error('获取模板字段字典数据失败:', error)
+      throw error
+    }
+  }
 }
