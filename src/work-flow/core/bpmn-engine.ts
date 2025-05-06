@@ -1,6 +1,8 @@
 import { EventEmitter } from 'node:events'
+import * as elements from 'bpmn-elements'
 import { Engine, Instance } from 'bpmn-engine'
 import BpmnModdle from 'bpmn-moddle'
+import Serializer, { TypeResolver } from 'moddle-context-serializer'
 
 /**
  * BPMN引擎封装类
@@ -9,27 +11,50 @@ import BpmnModdle from 'bpmn-moddle'
 export class BpmnEngineWrapper {
   // 增加明确的属性类型声明
   private readonly executionCache: Map<string, Instance>
+  private readonly moddle: BpmnModdle.BPMNModdle
+  private engine: Engine
+  public readonly eventEmitter = new EventEmitter()
 
   constructor() {
     this.executionCache = new Map() // 明确初始化
-    const moddle = new BpmnModdle() // 正确创建moddle实例
+    this.moddle = new BpmnModdle() // 正确创建moddle实例
 
     this.engine = new Engine({
-      name: 'file-engine',
-      moddle,
-      source: '',
+      name: '',
+      source: null,
     })
 
     this.registerEngineHooks()
+  }
+
+  async getContext(source, options: any = {}) {
+    const moddleContext = await this.getModdleContext(source, options)
+
+    if (moddleContext[0].warnings) {
+      moddleContext[0].warnings.forEach(({ error, message, element, property }) => {
+        if (error)
+          return console.error(message)
+        console.error(`<${element.id}> ${property}:`, message)
+      })
+    }
+
+    const types = TypeResolver({
+      ...elements,
+      ...options?.elements,
+    })
+
+    return Serializer(moddleContext, types, options?.extendFn)
+  }
+
+  getModdleContext(source, options) {
+    const bpmnModdle = new BpmnModdle(options)
+    return bpmnModdle.fromXML(source)
   }
 
   // 修正moddle创建方式
   private createModdle() {
     return new BpmnModdle()
   }
-
-  private readonly engine: Engine
-  public readonly eventEmitter = new EventEmitter()
 
   /**
    * 注册引擎事件钩子
@@ -75,13 +100,21 @@ export class BpmnEngineWrapper {
    */
   async createInstance(bpmnXml: string, variables: Record<string, unknown> = {}): Promise<string> {
     try {
-      const definition = await this.engine.define(bpmnXml)
-      const instance = await definition.getInstance({ variables })
-      await instance.execute()
+      const sourceContext = await this.getContext(bpmnXml)
+      this.engine.addSource({
+        sourceContext,
+      })
+
+      const executeObj = await this.engine.execute()
+
+      const definition = await executeObj.definitions[0]
+
+      const instance = await definition.getInstance()
+
       return instance.id
     }
     catch (error) {
-      throw new Error(`Instance creation failed: ${(error as Error).message}`)
+      throw new Error(`实例创建失败: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 
