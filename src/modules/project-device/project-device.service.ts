@@ -34,11 +34,17 @@ export class ProjectDeviceService {
           engineer: results[0].engineer,
         }
         const projectData = results[0].projectData
+        let tableName = ''
+        Object.keys(projectData).forEach((key) => {
+          if (key.startsWith('table')) {
+            tableName = key
+          }
+        })
         const tableData = []
         results.forEach((item) => {
-          tableData.push(...item.projectData.table)
+          tableData.push(...item.projectData[tableName])
         })
-        projectData.table = tableData
+        projectData[tableName] = tableData
         resultsWithProjectData = {
           ...projectBaseMessage,
           projectData,
@@ -49,7 +55,7 @@ export class ProjectDeviceService {
           const summaryColumns = sumConfig.summaryColumns
           const summaryData = getSummaryData(tableData, classColumns, summaryColumns)
           const summaryProjectData = cloneDeep(projectData)
-          summaryProjectData.table = summaryData
+          summaryProjectData[tableName] = summaryData
           projectDeviceSummaryByType = {
             ...projectBaseMessage,
             projectData: summaryProjectData,

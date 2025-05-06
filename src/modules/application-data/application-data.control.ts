@@ -71,4 +71,12 @@ export class ApplicationDataController {
     const { userId, templateId } = body
     return this.ApplicationDataService.deleteApplicationData(userId, templateId)
   }
+
+  // 查询模板字段字典
+  @Get('template-field-dict')
+  @ApiOperation({ summary: '查询模板字段字典' })
+  @Perm(permissions.READ)
+  async getTemplateFieldDict(@Query() query: any) {
+    return this.ApplicationDataService.getTemplateFieldDict(query)
+  }
 }
