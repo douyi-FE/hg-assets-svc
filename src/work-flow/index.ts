@@ -1,49 +1,49 @@
+import flowDesignCollect from '~/monogdb/models/flow-design'
 import { BpmnEngineWrapper } from './core/bpmn-engine'
-import { ProcessDefinitionRepository } from './repositories/process-definition.repository'
 import { ProcessInstanceRepository } from './repositories/process-instance.repository'
 import { InstanceService } from './services/instance.service'
 
-/**
- * 系统初始化流程
- */
-export async function initializeFlow(name: string, xml: string) {
-  // 初始化核心组件
-  const engine = new BpmnEngineWrapper()
-  const definitionRepo = new ProcessDefinitionRepository()
-  const instanceRepo = new ProcessInstanceRepository()
-  const instanceService = new InstanceService(engine, definitionRepo, instanceRepo)
-
-  // 注册事件监听
-  engine.eventEmitter.on('activity.wait', (event) => {
-    console.log(`[${event.timestamp}] 流程暂停在节点 ${event.activityId}`)
-    console.log('执行下一步命令: npm run resume --', event.instanceId)
-  })
-
-  // 示例：部署并运行流程
-  try {
-    // 正确调用创建方法
-    const definition = await definitionRepo.create({
-      deployedAt: new Date(),
-      name,
-      bpmnXml: xml,
-    })
-
-    // 启动实例（现在可以正确获取id）
-    const instanceId = await instanceService.startInstance(definition.id, {
-      orderId: 1001,
-      items: ['product-a', 'product-b'],
-    })
-
-    console.log('流程实例已启动:', instanceId)
+class WorkFlowService {
+  service: InstanceService
+  instanceRepo: ProcessInstanceRepository
+  constructor() {
+    // 初始化核心组件
+    const engine = new BpmnEngineWrapper()
+    this.instanceRepo = new ProcessInstanceRepository()
+    this.service = new InstanceService(engine, this.instanceRepo)
   }
-  catch (error) {
-    console.error('系统初始化失败:', error)
-    process.exit(1)
+
+  async initializeFlow() {
+    // 初始化流程定义
+    const flows: any[] = await flowDesignCollect.find()
+    for (const flow of flows) {
+      console.log(flow.id, flow.name)
+    }
+  }
+
+  async createFlow(flowId: string, variables: any = {}, initiatorId?: string) {
+    // 示例：部署并运行流程
+    try {
+      // 启动实例（现在可以正确获取id）
+      return this.service.startInstance(flowId, variables, initiatorId)
+    }
+    catch (error) {
+      return error.message
+    }
+  }
+
+  /**
+   * 审批流程,执行下一个节点
+   * @param instanceId 实例ID
+   * @returns 审批结果
+   */
+  async approveFlow(instanceId: string) {
+    return this.service.approveInstance(instanceId)
+  }
+
+  async rejectFlow(instanceId: string) {
+    return this.service.endInstance(instanceId)
   }
 }
 
-// // 启动系统
-// bootstrap('订单处理流程', `<?xml version="1.0" encoding="UTF-8"?>
-//         <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL">
-//           <bpmn:process id="Process_1" />
-//         </bpmn:definitions>`).catch(console.error)
+export const workFlowService = new WorkFlowService()

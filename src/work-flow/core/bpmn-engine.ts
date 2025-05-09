@@ -3,6 +3,8 @@ import * as elements from 'bpmn-elements'
 import { Engine, Instance } from 'bpmn-engine'
 import BpmnModdle from 'bpmn-moddle'
 import Serializer, { TypeResolver } from 'moddle-context-serializer'
+import { nanoid } from 'nanoid'
+import flowDesignCollect from '~/monogdb/models/flow-design'
 
 /**
  * BPMN引擎封装类
@@ -11,27 +13,21 @@ import Serializer, { TypeResolver } from 'moddle-context-serializer'
 export class BpmnEngineWrapper {
   // 增加明确的属性类型声明
   private readonly executionCache: Map<string, Instance>
-  private readonly moddle: BpmnModdle.BPMNModdle
   private engine: Engine
   public readonly eventEmitter = new EventEmitter()
 
   constructor() {
     this.executionCache = new Map() // 明确初始化
-    this.moddle = new BpmnModdle() // 正确创建moddle实例
-
     this.engine = new Engine({
-      name: '',
-      source: null,
+      name: 'add source',
     })
-
-    this.registerEngineHooks()
   }
 
   async getContext(source, options: any = {}) {
     const moddleContext = await this.getModdleContext(source, options)
 
-    if (moddleContext[0].warnings) {
-      moddleContext[0].warnings.forEach(({ error, message, element, property }) => {
+    if (moddleContext.warnings.length > 0) {
+      moddleContext.warnings.forEach(({ error, message, element, property }) => {
         if (error)
           return console.error(message)
         console.error(`<${element.id}> ${property}:`, message)
@@ -46,76 +42,135 @@ export class BpmnEngineWrapper {
     return Serializer(moddleContext, types, options?.extendFn)
   }
 
-  getModdleContext(source, options) {
+  getModdleContext(source, options): any {
     const bpmnModdle = new BpmnModdle(options)
     return bpmnModdle.fromXML(source)
-  }
-
-  // 修正moddle创建方式
-  private createModdle() {
-    return new BpmnModdle()
   }
 
   /**
    * 注册引擎事件钩子
    * 将原生事件转换为应用层事件
    */
-  private registerEngineHooks(): void {
-    this.engine.on('activity.enter', (activity) => {
-      this.eventEmitter.emit('activity.enter', {
-        instanceId: activity.execution.id,
-        activityId: activity.id,
-        type: activity.type,
-        timestamp: Date.now(),
-      })
-      this.executionCache.set(activity.execution.id, activity.execution)
+  public registerEngineHooks(): EventEmitter {
+    const listener = new EventEmitter()
+    listener.on('activity.enter', async (elementApi, engineApi) => {
+      if (elementApi.type === 'bpmn:StartEvent') {
+        await engineApi.signal()
+      }
+
+      // 获取节点的扩展属性
+      const element = elementApi.broker.getState().element
+      if (element && element.extensionElements) {
+        const properties = element.extensionElements.values.find(el => el.$type === 'camunda:Properties')
+        if (properties) {
+          console.log('节点属性配置:')
+          properties.properties.forEach((prop) => {
+            console.log(`  ${prop.name}: ${prop.value}`)
+          })
+        }
+      }
+      console.log(`${elementApi.type} <${elementApi.id}> in ${elementApi.name} of ${engineApi.name} is entered`)
     })
 
-    this.engine.on('activity.end', (activity) => {
-      this.eventEmitter.emit('activity.end', {
-        instanceId: activity.execution.id,
-        activityId: activity.id,
-        output: activity.output,
-        timestamp: Date.now(),
-      })
-      this.executionCache.delete(activity.execution.id)
+    listener.on('activity.wait', (elementApi, instance) => {
+      // 获取等待节点的扩展属性
+      const element = elementApi.broker.getState().element
+      if (element && element.extensionElements) {
+        const properties = element.extensionElements.values.find(el => el.$type === 'camunda:Properties')
+        if (properties) {
+          console.log('等待节点属性配置:')
+          properties.properties.forEach((prop) => {
+            console.log(`  ${prop.name}: ${prop.value}`)
+          })
+        }
+      }
+      console.log(`${elementApi.type} <${elementApi.id}> in ${elementApi.name} of ${instance.name} is waiting for input`)
     })
 
-    this.engine.on('wait', (activity) => {
-      this.eventEmitter.emit('activity.wait', {
-        instanceId: activity.execution.id,
-        activityId: activity.id,
-        message: 'Waiting for external action',
-        timestamp: Date.now(),
-      })
-      activity.execution.suspend()
+    listener.on('activity.end', (activity) => {
+      console.log(activity.name, 'is ending')
+      this.executionCache.delete(activity.executionId)
     })
+    return listener
   }
 
   /**
    * 创建新流程实例
-   * @param bpmnXml BPMN 2.0 XML定义
+   * @param flowId 流程ID
    * @param variables 初始化变量
    * @returns 实例ID
    */
-  async createInstance(bpmnXml: string, variables: Record<string, unknown> = {}): Promise<string> {
+  async createInstance(flowId: string, variables: Record<string, unknown> = {}): Promise<{ instanceId: string, state: any }> {
     try {
-      const sourceContext = await this.getContext(bpmnXml)
+      const flow: any = await flowDesignCollect.findById(flowId)
+      const flowXml = flow._doc.xml
+      const sourceContext = await this.getContext(flowXml)
       this.engine.addSource({
         sourceContext,
       })
-
-      const executeObj = await this.engine.execute()
-
-      const definition = await executeObj.definitions[0]
-
-      const instance = await definition.getInstance()
-
-      return instance.id
+      const listener = this.registerEngineHooks()
+      const executeObj: any = await this.engine.execute({
+        variables,
+        listener,
+      })
+      const state = await this.engine.getState()
+      const definition: any = await executeObj.definitions[0]
+      const instanceId = `${definition.context.id}-${nanoid(16)}`
+      this.executionCache.set(instanceId, executeObj)
+      return { instanceId, state }
     }
     catch (error) {
       throw new Error(`实例创建失败: ${error instanceof Error ? error.message : String(error)}`)
     }
+  }
+
+  /**
+   * 审批流程
+   * @param instanceId 实例ID
+   * @returns 审批结果
+   */
+  async approveInstance(instanceId: string): Promise<{ tasks: { name: string, type: string, id: string }[], isRunning: boolean }> {
+    const executeObj: any = this.executionCache.get(instanceId)
+    if (executeObj) {
+      if (executeObj.isRunning === false) {
+        return {
+          tasks: [],
+          isRunning: false,
+        }
+      }
+      else {
+        const userTasks = executeObj.getPostponed().filter(activity => activity.type === 'bpmn:UserTask')
+        if (userTasks.length > 0) {
+          userTasks.forEach((task) => {
+            task.signal({
+              comment: '审批通过',
+            })
+          })
+          console.log('审批成功', userTasks.map(task => task.name))
+          return {
+            tasks: userTasks.map(task => ({ name: task.name, type: task.type, id: task.id })),
+            isRunning: true,
+          }
+        }
+        else {
+          return {
+            tasks: [],
+            isRunning: true,
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * 获取流程当前执行节点
+   */
+  getCurrentNode(instanceId: string): string {
+    const instance: any = this.executionCache.get(instanceId)
+    if (instance) {
+      return instance.getCurrentNode()[0]
+    }
+    return null
   }
 
   /**
@@ -124,9 +179,7 @@ export class BpmnEngineWrapper {
    */
   async resumeInstance(instanceId: string): Promise<void> {
     const instance = this.executionCache.get(instanceId)
-      || this.engine.getExecutingInstances().find(i => i.id === instanceId)
-
-    if (instance?.state === 'paused') {
+    if (instance) {
       await instance.resume()
     }
   }
@@ -137,8 +190,6 @@ export class BpmnEngineWrapper {
    */
   async terminateInstance(instanceId: string): Promise<void> {
     const instance = this.executionCache.get(instanceId)
-      || this.engine.getExecutingInstances().find(i => i.id === instanceId)
-
     if (instance) {
       await instance.stop()
       this.executionCache.delete(instanceId)
@@ -152,26 +203,32 @@ export class BpmnEngineWrapper {
    */
   getStateSnapshot(instanceId: string): object | null {
     const instance = this.executionCache.get(instanceId)
-      || this.engine.getExecutingInstances().find(i => i.id === instanceId)
-
-    return instance?.getStateSnapshot() || null
+    return instance || null
   }
 
   /**
    * 从快照恢复实例
    * @param bpmnXml 原始BPMN定义
-   * @param snapshot 状态快照
+   * @param state 引擎状态快照
    * @returns 新实例ID
    */
-  async restoreInstance(bpmnXml: string, snapshot: object): Promise<string> {
+  async restoreInstance(state?: object): Promise<{ newInstanceId: string, newState: any }> {
     try {
-      const definition = await this.engine.define(bpmnXml)
-      const instance = await definition.getInstance()
-      await instance.resume(snapshot)
-      return instance.id
+      this.engine = new Engine().recover(state)
+      const listener = this.registerEngineHooks()
+
+      const executeObj = await this.engine.execute({ listener })
+      const newState = await this.engine.getState()
+      const definition: any = await executeObj.definitions[0]
+      await this.engine.resume({ listener })
+
+      const newInstanceId = `${definition.context.id}-${nanoid(16)}`
+      this.executionCache.set(newInstanceId, definition.context)
+
+      return { newInstanceId, newState }
     }
     catch (error) {
-      throw new Error(`Restore failed: ${(error as Error).message}`)
+      throw new Error(`恢复失败: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 }

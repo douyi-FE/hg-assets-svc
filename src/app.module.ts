@@ -27,6 +27,7 @@ import { FileStorageModule } from './modules/file-storage/fileStorage.module'
 import { FlowApprovalModule } from './modules/flow-approval/flow-approval.module'
 import { FlowBindModule } from './modules/flow-bind/flow-bind.module'
 import { FlowDesignModule } from './modules/flow-design/flowDesign.module'
+import { FlowExecuteModule } from './modules/flow-execute/flowExecute.module'
 import { HealthModule } from './modules/health/health.module'
 import { InvoiceModule } from './modules/invoice/invoice.module'
 import { LeaveModule } from './modules/leave/leave.module'
@@ -135,6 +136,8 @@ import { SocketModule } from './socket/socket.module'
     EngineerModule,
     // 流程绑定管理
     FlowBindModule,
+    // 流程执行管理
+    FlowExecuteModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },

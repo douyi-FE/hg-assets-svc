@@ -2,9 +2,7 @@ import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { uniqueId } from 'lodash'
 import { ApiSecurityAuth } from '~/common/decorators/swagger.decorator'
-import { initializeFlow } from '~/work-flow'
 import { definePermission, Perm } from '../auth/decorators/permission.decorator'
-import { FlowDesignService } from '../flow-design/flowDesign.service'
 import { LeaveService } from './leave.service'
 
 export const permissions = definePermission('financial:invoice', {
@@ -35,19 +33,21 @@ export class LeaveController {
   async addLeaveData(@Body() leaveData: any) {
     const applyCode = `LEAVE-${uniqueId()}`
     const approverStatus = 'pending'
-    const { flowId, ...rest } = leaveData
-    const flowDesignCollect = new FlowDesignService()
-    flowDesignCollect.find(flowId).then((res: any) => {
-      initializeFlow('请假流程', res._doc.xml).then((res) => {
-        console.log(res)
-      })
-    }).then((res) => {
-      return this.leaveService.addLeaveData({
-        ...rest,
-        applyCode,
-        approverStatus,
-      })
+    const { flowId, initiatorId, ...rest } = leaveData
+    return this.leaveService.addLeaveData({
+      ...rest,
+      applyCode,
+      approverStatus,
     })
+  }
+
+  // 更新请假
+  @Post('update')
+  @ApiOperation({ summary: '更新请假' })
+  @Perm(permissions.UPDATE)
+  async updateLeaveData(@Body() leaveData: any) {
+    const { id, ...rest } = leaveData
+    return this.leaveService.updateLeaveData(id, rest)
   }
 
   // 删除请假
@@ -81,7 +81,7 @@ export class LeaveController {
   @ApiOperation({ summary: '驳回请假' })
   @Perm(permissions.UPDATE)
   async rejectLeaveData(@Body() leaveData: any) {
-    const { id, rejectData } = leaveData
-    return this.leaveService.rejectLeaveData(id, rejectData)
+    const { id } = leaveData
+    return this.leaveService.rejectLeaveData(id)
   }
 }

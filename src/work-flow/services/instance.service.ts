@@ -1,5 +1,5 @@
 import type { ProcessInstanceRepository } from '../repositories//process-instance.repository'
-import type { ProcessDefinitionRepository } from '../repositories/process-definition.repository'
+import { nanoid } from 'nanoid'
 import { BpmnEngineWrapper } from '../core/bpmn-engine'
 import { ProcessInstanceStatus } from '../models/process-instance'
 
@@ -10,52 +10,43 @@ import { ProcessInstanceStatus } from '../models/process-instance'
 export class InstanceService {
   constructor(
     private readonly engine: BpmnEngineWrapper,
-    private readonly definitions: ProcessDefinitionRepository,
     private readonly instances: ProcessInstanceRepository,
   ) {}
-
-  // 在服务层添加克隆方法
-  private deepClone(obj: object): object {
-    return JSON.parse(JSON.stringify(obj))
-  }
 
   /**
    * 启动新流程实例（修复版）
    * 修复了 instanceId 使用顺序问题
    */
-  async startInstance(definitionId: string, variables: Record<string, unknown> = {}) {
-    const definition = await this.definitions.findById(definitionId)
-    if (!definition) {
-      throw new Error('Process definition not found')
-    }
-
+  async startInstance(flowId: string, variables: Record<string, unknown> = {}, initiatorId: string = '') {
     try {
-      // 第一步：创建引擎实例
-      const instanceId = await this.engine.createInstance(
-        definition.bpmnXml,
+      // 创建引擎实例
+      const { instanceId, state } = await this.engine.createInstance(
+        flowId,
         this.sanitizeVariables(variables),
       )
 
-      // 第二步：获取状态快照（此时instanceId已定义）
-      const snapshot = this.deepClone(
-        this.engine.getStateSnapshot(instanceId),
-      )
-
-      // 第三步：持久化存储
-      await this.instances.save({
-        id: instanceId,
-        processDefinitionId: definitionId,
+      return {
+        id: nanoid(16),
+        stateSnapshot: state,
+        flowDesignId: flowId,
+        processDefinitionId: instanceId,
+        initiatorId,
         variables: this.sanitizeVariables(variables),
-        stateSnapshot: snapshot, // 使用正确的克隆方法
         status: ProcessInstanceStatus.RUNNING,
-        createdAt: new Date(),
-      })
-
-      return instanceId
+      }
     }
     catch (error) {
       throw new Error(`Failed to start instance: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 审批流程
+   * @param instanceId 实例ID
+   * @returns 审批结果
+   */
+  async approveInstance(instanceId: string) {
+    return this.engine.approveInstance(instanceId)
   }
 
   /**
@@ -75,32 +66,21 @@ export class InstanceService {
       throw new Error('Instance not found')
     }
 
-    const definition = await this.definitions.findById(instance.processDefinitionId)
-    if (!definition) {
-      throw new Error('Process definition not found')
-    }
-
     try {
       // 使用安全克隆方法
-      const cleanSnapshot = this.deepClone(instance.stateSnapshot)
-
-      const newInstanceId = await this.engine.restoreInstance(
-        definition.bpmnXml,
-        cleanSnapshot,
-      )
-
-      await this.instances.save({
-        ...instance,
-        id: newInstanceId,
-        parentInstanceId: instanceId,
-        status: ProcessInstanceStatus.RUNNING,
-        updatedAt: new Date(),
-      })
-
-      return newInstanceId
+      const state = instance.stateSnapshot
+      await this.engine.restoreInstance(state)
     }
     catch (error) {
       throw new Error(`Resume failed: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 结束指定流程实例
+   */
+  async endInstance(instanceId: string) {
+    // 删除示例引擎
+    await this.engine.terminateInstance(instanceId)
   }
 }

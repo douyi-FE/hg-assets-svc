@@ -24,17 +24,23 @@ export interface ProcessInstance {
   /** 实例唯一标识符 (UUID格式) */
   id: string
 
+  /** 发起人ID */
+  initiatorId: string
+
   /** 关联的流程定义ID */
   processDefinitionId: string
 
   /** 当前实例状态 */
   status: ProcessInstanceStatus
 
-  /** 流程变量存储（支持JSON序列化的数据） */
-  variables: Record<string, unknown>
-
   /** 引擎状态快照（用于流程恢复） */
   stateSnapshot: object
+
+  /** 当前流程执行节点 */
+  flowDesignId: string
+
+  /** 流程变量存储（支持JSON序列化的数据） */
+  variables: Record<string, unknown>
 
   /** 实例创建时间（ISO 8601格式） */
   createdAt: Date

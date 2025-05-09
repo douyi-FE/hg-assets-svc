@@ -25,13 +25,7 @@ export class ProcessInstanceRepository {
       ...instance,
       id: this.generateId(),
     }
-    await this.save(newInstance)
     return newInstance
-  }
-
-  // 修正save方法参数类型
-  async save(instance: ProcessInstance): Promise<void> {
-    await this.store.save(instance) // 仅传递单个对象参数
   }
 
   async findById(id: string): Promise<ProcessInstance | undefined> {
@@ -71,5 +65,12 @@ export class ProcessInstanceRepository {
     await this.store.save(newInstance) // 只传一个参数
 
     return newInstance
+  }
+
+  /**
+   * 删除指定实例
+   */
+  async delete(id: string): Promise<void> {
+    await this.store.delete(id)
   }
 }

@@ -13,8 +13,17 @@ export class LeaveService {
 
   // 新增请假
   async addLeaveData(leaveData: any) {
-    const result = await LeaveCollect.create(leaveData)
-    return result.toObject()
+    const result: any = await LeaveCollect.create(leaveData)
+    return {
+      ...result.toObject(),
+      _id: result._id.buffer.toString('hex'),
+    }
+  }
+
+  // 更新请假
+  async updateLeaveData(id: string, leaveData: any) {
+    const result = await LeaveCollect.findByIdAndUpdate(id, leaveData).exec()
+    return result ? result.toObject() : null
   }
 
   // 删除请假
@@ -36,8 +45,10 @@ export class LeaveService {
   }
 
   // 驳回请假
-  async rejectLeaveData(id: string, rejectData: any) {
-    const result = await LeaveCollect.findByIdAndUpdate(id, rejectData).exec()
+  async rejectLeaveData(id: string) {
+    const result = await LeaveCollect.findByIdAndUpdate(id, {
+      approverStatus: 'reject',
+    }).exec()
     return result ? result.toObject() : null
   }
 }
