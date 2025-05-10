@@ -2,10 +2,10 @@ import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { uniqueId } from 'lodash'
 import { ApiSecurityAuth } from '~/common/decorators/swagger.decorator'
-import { definePermission, Perm } from '../auth/decorators/permission.decorator'
+import { definePermission } from '../auth/decorators/permission.decorator'
 import { LeaveService } from './leave.service'
 
-export const permissions = definePermission('financial:invoice', {
+export const permissions = definePermission('human:leave', {
   LIST: 'list',
   CREATE: 'create',
   READ: 'read',
@@ -21,7 +21,6 @@ export class LeaveController {
   // 获取所有请假数据
   @Get('list')
   @ApiOperation({ summary: '获取所有请假数据' })
-  @Perm(permissions.READ)
   async getLeaveData() {
     return this.leaveService.getLeaveData()
   }
@@ -29,7 +28,6 @@ export class LeaveController {
   // 新增请假
   @Post('create')
   @ApiOperation({ summary: '新增请假' })
-  @Perm(permissions.CREATE)
   async addLeaveData(@Body() leaveData: any) {
     const applyCode = `LEAVE-${uniqueId()}`
     const approverStatus = 'pending'
@@ -44,7 +42,6 @@ export class LeaveController {
   // 更新请假
   @Post('update')
   @ApiOperation({ summary: '更新请假' })
-  @Perm(permissions.UPDATE)
   async updateLeaveData(@Body() leaveData: any) {
     const { id, ...rest } = leaveData
     return this.leaveService.updateLeaveData(id, rest)
@@ -53,7 +50,6 @@ export class LeaveController {
   // 删除请假
   @Delete('delete')
   @ApiOperation({ summary: '删除请假' })
-  @Perm(permissions.DELETE)
   async deleteLeaveData(@Body() leaveData: any) {
     const { id } = leaveData
     return this.leaveService.deleteLeaveData(id)
@@ -62,7 +58,6 @@ export class LeaveController {
   // 获取请假详情
   @Get('detail')
   @ApiOperation({ summary: '获取请假详情' })
-  @Perm(permissions.READ)
   async getLeaveDataById(@Query('id') id: string) {
     return this.leaveService.getLeaveDataById(id)
   }
@@ -70,7 +65,6 @@ export class LeaveController {
   // 审批请假
   @Post('approve')
   @ApiOperation({ summary: '审批请假' })
-  @Perm(permissions.UPDATE)
   async approveLeaveData(@Body() leaveData: any) {
     const { id, approveData } = leaveData
     return this.leaveService.approveLeaveData(id, approveData)
@@ -79,7 +73,6 @@ export class LeaveController {
   // 驳回请假
   @Post('reject')
   @ApiOperation({ summary: '驳回请假' })
-  @Perm(permissions.UPDATE)
   async rejectLeaveData(@Body() leaveData: any) {
     const { id } = leaveData
     return this.leaveService.rejectLeaveData(id)

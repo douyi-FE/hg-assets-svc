@@ -1,4 +1,3 @@
-import type { ProcessInstanceRepository } from '../repositories//process-instance.repository'
 import { nanoid } from 'nanoid'
 import { BpmnEngineWrapper } from '../core/bpmn-engine'
 import { ProcessInstanceStatus } from '../models/process-instance'
@@ -10,7 +9,6 @@ import { ProcessInstanceStatus } from '../models/process-instance'
 export class InstanceService {
   constructor(
     private readonly engine: BpmnEngineWrapper,
-    private readonly instances: ProcessInstanceRepository,
   ) {}
 
   /**
@@ -20,7 +18,7 @@ export class InstanceService {
   async startInstance(flowId: string, variables: Record<string, unknown> = {}, initiatorId: string = '') {
     try {
       // 创建引擎实例
-      const { instanceId, state } = await this.engine.createInstance(
+      const { instanceId, state, tasks } = await this.engine.createInstance(
         flowId,
         this.sanitizeVariables(variables),
       )
@@ -28,8 +26,9 @@ export class InstanceService {
       return {
         id: nanoid(16),
         stateSnapshot: state,
+        tasks,
         flowDesignId: flowId,
-        processDefinitionId: instanceId,
+        instanceId,
         initiatorId,
         variables: this.sanitizeVariables(variables),
         status: ProcessInstanceStatus.RUNNING,
@@ -60,16 +59,10 @@ export class InstanceService {
   /**
    * 恢复实例（兼容性修复）
    */
-  async resumeInstance(instanceId: string) {
-    const instance = await this.instances.findById(instanceId)
-    if (!instance) {
-      throw new Error('Instance not found')
-    }
-
+  async resumeInstance(instance: any) {
     try {
-      // 使用安全克隆方法
-      const state = instance.stateSnapshot
-      await this.engine.restoreInstance(state)
+      const { instanceId, stateSnapshot, tasks = [] } = instance
+      await this.engine.restoreInstance(instanceId, stateSnapshot, tasks)
     }
     catch (error) {
       throw new Error(`Resume failed: ${(error as Error).message}`)
@@ -82,5 +75,12 @@ export class InstanceService {
   async endInstance(instanceId: string) {
     // 删除示例引擎
     await this.engine.terminateInstance(instanceId)
+  }
+
+  /**
+   * 获取当前流程实例的待执行任务
+   */
+  async getCurrentTasks(instanceId: string) {
+    return this.engine.getCurrentTasks(instanceId)
   }
 }

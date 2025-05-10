@@ -54,7 +54,12 @@ export class BpmnEngineWrapper {
   public registerEngineHooks(): EventEmitter {
     const listener = new EventEmitter()
     listener.on('activity.enter', async (elementApi, engineApi) => {
+      // 开始节点自动进入下一节点
       if (elementApi.type === 'bpmn:StartEvent') {
+        await engineApi.signal()
+      }
+      // 结束节点自动结束流程
+      else if (elementApi.type === 'bpmn:EndEvent') {
         await engineApi.signal()
       }
 
@@ -100,10 +105,11 @@ export class BpmnEngineWrapper {
    * @param variables 初始化变量
    * @returns 实例ID
    */
-  async createInstance(flowId: string, variables: Record<string, unknown> = {}): Promise<{ instanceId: string, state: any }> {
+  async createInstance(flowId: string, variables: Record<string, unknown> = {}): Promise<{ instanceId: string, state: any, tasks: any[] }> {
     try {
       const flow: any = await flowDesignCollect.findById(flowId)
       const flowXml = flow._doc.xml
+      const moddleContext = await this.getModdleContext(flowXml, {})
       const sourceContext = await this.getContext(flowXml)
       this.engine.addSource({
         sourceContext,
@@ -117,7 +123,17 @@ export class BpmnEngineWrapper {
       const definition: any = await executeObj.definitions[0]
       const instanceId = `${definition.context.id}-${nanoid(16)}`
       this.executionCache.set(instanceId, executeObj)
-      return { instanceId, state }
+      const tasks = executeObj.getPostponed().map((task) => {
+        const taskExtension = (moddleContext.elementsById[task.id].extensionElements?.values || []).map((el) => {
+          const obj = {}
+          el.$children.forEach((child) => {
+            obj[child.name] = child.value
+          })
+          return obj
+        })
+        return { name: task.name, type: task.type, id: task.id, properties: taskExtension }
+      })
+      return { instanceId, state, tasks }
     }
     catch (error) {
       throw new Error(`实例创建失败: ${error instanceof Error ? error.message : String(error)}`)
@@ -129,12 +145,13 @@ export class BpmnEngineWrapper {
    * @param instanceId 实例ID
    * @returns 审批结果
    */
-  async approveInstance(instanceId: string): Promise<{ tasks: { name: string, type: string, id: string }[], isRunning: boolean }> {
+  async approveInstance(instanceId: string): Promise<{ tasks: { name: string, type: string, id: string }[], state: any, isRunning: boolean }> {
     const executeObj: any = this.executionCache.get(instanceId)
     if (executeObj) {
       if (executeObj.isRunning === false) {
         return {
           tasks: [],
+          state: executeObj.getState(),
           isRunning: false,
         }
       }
@@ -146,31 +163,46 @@ export class BpmnEngineWrapper {
               comment: '审批通过',
             })
           })
-          console.log('审批成功', userTasks.map(task => task.name))
+          const currentTasks = executeObj.getPostponed().filter(activity => activity.type === 'bpmn:UserTask')
           return {
-            tasks: userTasks.map(task => ({ name: task.name, type: task.type, id: task.id })),
-            isRunning: true,
+            tasks: currentTasks.map((task) => {
+              const taskExtension = (task.owner.behaviour.extensionElements?.values || []).map((el) => {
+                const obj = {}
+                el.$children.forEach((child) => {
+                  obj[child.name] = child.value
+                })
+                return obj
+              })
+              return { name: task.name, type: task.type, id: task.id, properties: taskExtension[0] || {} }
+            }),
+            state: executeObj.getState(),
+            // 如果当前节点有待审批任务，则流程继续运行,否则流程结束
+            isRunning: currentTasks.length > 0,
           }
         }
         else {
           return {
             tasks: [],
+            state: executeObj.getState(),
             isRunning: true,
           }
         }
       }
+    }
+    else {
+      throw new Error('执行流程不存在')
     }
   }
 
   /**
    * 获取流程当前执行节点
    */
-  getCurrentNode(instanceId: string): string {
+  getCurrentTasks(instanceId: string): any[] {
     const instance: any = this.executionCache.get(instanceId)
     if (instance) {
-      return instance.getCurrentNode()[0]
+      return instance.getPostponed()
     }
-    return null
+    return []
   }
 
   /**
@@ -208,24 +240,35 @@ export class BpmnEngineWrapper {
 
   /**
    * 从快照恢复实例
-   * @param bpmnXml 原始BPMN定义
+   * @param instanceId 实例ID
    * @param state 引擎状态快照
+   * @param tasks 待执行任务
    * @returns 新实例ID
    */
-  async restoreInstance(state?: object): Promise<{ newInstanceId: string, newState: any }> {
+  async restoreInstance(instanceId: string, state?: object, tasks?: any[]): Promise<object> {
     try {
       this.engine = new Engine().recover(state)
       const listener = this.registerEngineHooks()
-
-      const executeObj = await this.engine.execute({ listener })
-      const newState = await this.engine.getState()
-      const definition: any = await executeObj.definitions[0]
       await this.engine.resume({ listener })
+      const executeObj: any = await this.engine.execute()
+      // 执行到指定节点
+      function goToTask(taskIds: string[]) {
+        const tasks = executeObj.getPostponed()
+        const task = tasks.find(task => taskIds.includes(task.id))
+        if (task === undefined) {
+          tasks.forEach((tk) => {
+            tk.signal()
+          })
+        }
+        else {
+          goToTask(taskIds)
+        }
+      }
+      goToTask(tasks.map(task => task.id))
 
-      const newInstanceId = `${definition.context.id}-${nanoid(16)}`
-      this.executionCache.set(newInstanceId, definition.context)
-
-      return { newInstanceId, newState }
+      this.executionCache.set(instanceId, executeObj)
+      const newState = await this.engine.getState()
+      return { instanceId, newState }
     }
     catch (error) {
       throw new Error(`恢复失败: ${error instanceof Error ? error.message : String(error)}`)

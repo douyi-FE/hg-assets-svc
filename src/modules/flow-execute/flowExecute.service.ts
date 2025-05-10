@@ -7,12 +7,8 @@ import { ProcessInstanceStatus } from '~/work-flow/models/process-instance'
 export class FlowExecuteService {
   constructor() {}
 
-  async list(name: string) {
-    const list = await flowExecuteCollect.find({
-      name: {
-        $regex: name,
-      },
-    })
+  async list() {
+    const list = await flowExecuteCollect.find()
     const formattedList = list.map((item: any) => ({ ...item._doc, _id: item._id.buffer.toString('hex') }))
     return formattedList
   }
@@ -48,15 +44,16 @@ export class FlowExecuteService {
 
   async create(flowId: string, initiatorId: string, businessId: string, variables: any = {}) {
     return workFlowService.createFlow(flowId, variables, initiatorId).then((res: any) => {
-      const { stateSnapshot, flowDesignId, processDefinitionId, initiatorId, variables, status } = res
+      const { stateSnapshot, flowDesignId, instanceId, initiatorId, variables, status, tasks } = res
       return flowExecuteCollect.create({
         initiatorId,
         flowDesignId,
         businessId,
-        processDefinitionId,
+        instanceId,
         stateSnapshot,
         metadata: variables,
         status,
+        tasks,
       })
     }).then((res: any) => {
       return res.toObject()
@@ -67,18 +64,21 @@ export class FlowExecuteService {
     return flowExecuteCollect.findOne({
       businessId,
     }).then(async (res: any) => {
-      const result: any = await workFlowService.approveFlow(res.processDefinitionId)
-      const { tasks, isRunning } = result
+      const result: any = await workFlowService.approveFlow(res.instanceId)
+      const { tasks, isRunning, state } = result
       if (result) {
         return flowExecuteCollect.updateOne({
           businessId,
         }, {
           status: isRunning ? ProcessInstanceStatus.RUNNING : ProcessInstanceStatus.COMPLETED,
+          stateSnapshot: state,
+          tasks,
           initiatorId,
         }).then((res: any) => {
           return {
             status: isRunning ? ProcessInstanceStatus.RUNNING : ProcessInstanceStatus.COMPLETED,
             tasks,
+            stateSnapshot: state,
           }
         })
       }
@@ -100,7 +100,7 @@ export class FlowExecuteService {
             status: ProcessInstanceStatus.TERMINATED,
             initiatorId,
           }),
-          workFlowService.rejectFlow(res.processDefinitionId),
+          workFlowService.rejectFlow(res.instanceId),
         ])
       }
       else {

@@ -13,7 +13,7 @@ export class FlowExecuteController {
   @ApiOperation({ summary: '获取流程执行列表' })
   async list(@Query() dto: any) {
     const { name = '' } = dto
-    return this.flowExecuteService.list(name)
+    return this.flowExecuteService.list()
   }
 
   // 发起流程

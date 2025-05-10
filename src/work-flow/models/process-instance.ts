@@ -28,7 +28,7 @@ export interface ProcessInstance {
   initiatorId: string
 
   /** 关联的流程定义ID */
-  processDefinitionId: string
+  instanceId: string
 
   /** 当前实例状态 */
   status: ProcessInstanceStatus
@@ -64,7 +64,7 @@ export interface ProcessInstance {
  */
 export type CreateProcessInstanceParams = Pick<
   ProcessInstance,
-    'processDefinitionId' | 'variables' | 'businessKey' | 'metadata'
+  'instanceId' | 'variables' | 'businessKey' | 'metadata'
 >
 
 /**
