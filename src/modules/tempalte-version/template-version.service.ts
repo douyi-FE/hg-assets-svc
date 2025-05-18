@@ -41,7 +41,7 @@ export class TemplateVersionService {
     let newVersion = 1
     if (maxVersionDoc) {
       const currentMaxVersion = Number(maxVersionDoc.version)
-      if (!isNaN(currentMaxVersion) && currentMaxVersion > 0) {
+      if (!Number.isNaN(currentMaxVersion) && currentMaxVersion > 0) {
         newVersion = currentMaxVersion + 1
       }
     }
