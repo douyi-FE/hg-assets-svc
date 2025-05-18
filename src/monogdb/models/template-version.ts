@@ -8,6 +8,7 @@ export interface ITemplateVersion extends Document {
   status: number
   file: string
   type: string
+  initDataSource: any
 }
 
 const templateVersionSchema: Schema = new Schema({
@@ -17,6 +18,7 @@ const templateVersionSchema: Schema = new Schema({
   status: { type: Number, min: 0 },
   file: { type: String },
   type: { type: String },
+  initDataSource: { type: Object },
 }, { timestamps: true })
 
 const TemplateVersionCollect = mongoose.model<ITemplateVersion>('TemplateVersion', templateVersionSchema, 'template-version')

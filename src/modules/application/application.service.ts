@@ -59,6 +59,7 @@ export class ApplicationService {
               icon: application.icon,
               description: application.description,
               content: application.content,
+              initDataSource: application.initDataSource,
               updateTime: new Date(),
             },
           },

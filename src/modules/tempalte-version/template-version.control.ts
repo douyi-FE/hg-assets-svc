@@ -42,12 +42,13 @@ export class TemplateVersionController {
   @ApiOperation({ summary: '版本保存' })
   @Perm(permissions.SAVE)
   async save(@Body() body: any): Promise<any> {
-    const { templateId, note, type, sjs } = body
+    const { templateId, note, type, sjs, initDataSource } = body
     const result = await this.TemplateVersionService.save({
       templateId,
       note,
       type,
       file: sjs,
+      initDataSource,
     }).then(() => {
       return {
         message: '保存成功',

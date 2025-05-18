@@ -19,12 +19,16 @@ export class TemplateVersionService {
         type: item._doc.type,
       }
     })
+    // 按版本号倒序
+    formattedList.sort((a, b) => {
+      return b.version.localeCompare(a.version)
+    })
     return formattedList
   }
 
   // 版本保存
   async save(body) {
-    const { templateId, note, file, type } = body
+    const { templateId, note, file, type, initDataSource } = body
 
     // 查找当前最大版本号
     const maxVersionDoc = await TemplateVersionCollect.findOne(
@@ -34,10 +38,12 @@ export class TemplateVersionService {
     )
 
     // 计算新版本号
-    let newVersion = 'v1'
+    let newVersion = 1
     if (maxVersionDoc) {
-      const currentMaxVersion = Number.parseInt(maxVersionDoc.version.substring(1))
-      newVersion = `v${currentMaxVersion + 1}`
+      const currentMaxVersion = Number(maxVersionDoc.version)
+      if (!isNaN(currentMaxVersion) && currentMaxVersion > 0) {
+        newVersion = currentMaxVersion + 1
+      }
     }
 
     // 更新其他所有版本状态
@@ -54,6 +60,7 @@ export class TemplateVersionService {
       version: newVersion,
       status: 2,
       type,
+      initDataSource,
     })
 
     return result
@@ -94,6 +101,12 @@ export class TemplateVersionService {
       return {
         file: (templateVersion[0] as any)._doc.file,
         id: (templateVersion[0] as any)._id.buffer.toString('hex'),
+        initDataSource: (templateVersion[0] as any)._doc.initDataSource,
+        note: (templateVersion[0] as any)._doc.note,
+        version: (templateVersion[0] as any)._doc.version,
+        type: (templateVersion[0] as any)._doc.type,
+        createdAt: (templateVersion[0] as any)._doc.createdAt,
+        updatedAt: (templateVersion[0] as any)._doc.updatedAt,
       }
     }
   }
@@ -101,7 +114,7 @@ export class TemplateVersionService {
   // 版本应用
   async apply(@Body() body: any) {
     const { templateId, type } = body
-    console.log('exce;模板', templateId, type)
+    console.log('excel模板', templateId, type)
     const templateVersion = await TemplateVersionCollect.find({ templateId, type })
     if (templateVersion.length === 0) {
       throw new BadRequestException('模板版本不存在')

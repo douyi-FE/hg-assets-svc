@@ -93,7 +93,9 @@ export class TemplateController {
       code,
       isBuildIn,
       note,
-      status,
+      // status,
+      // 修改后需要手动发布
+      status: 0,
       initDataSource,
       file: sjs,
     }
