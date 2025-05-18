@@ -54,6 +54,30 @@ export class ApplicationDataController {
     }
   }
 
+  // 追加数据
+  @Post('data/append')
+  @ApiOperation({ summary: '追加数据' })
+  @Perm(permissions.CREATE)
+  async appendApplicationData(@Body() body: any) {
+    try {
+      const { userId, templateId, applicationData } = body
+      const result = await this.ApplicationDataService.appendApplicationData(userId, templateId, applicationData)
+      return {
+        code: 200,
+        message: '追加数据成功',
+        data: result,
+      }
+    }
+    catch (error) {
+      console.error('追加数据失败:', error)
+      return {
+        code: 500,
+        message: error.message || '追加数据失败',
+        data: null,
+      }
+    }
+  }
+
   // 依据userId与templateId更新应用数据
   @Put('data')
   @ApiOperation({ summary: '依据userId与templateId更新应用数据' })

@@ -41,6 +41,28 @@ export class ApplicationDataService {
     }
   }
 
+  // 追加数据
+  async appendApplicationData(userId: string, templateId: string, applicationData: any) {
+    try {
+      // 先查询最新的数据
+      const latestData = await ApplicationDataCollect.findOne({ templateId }).sort({ updateTime: -1 }).exec()
+      if (latestData) {
+        // 把参数数据追加到最新的数据中
+        const { applicationData: latestApplicationData } = latestData as any
+        const tableData = Object.keys(latestApplicationData).find(key => key.startsWith('table'))
+        if (tableData) {
+          latestApplicationData[tableData] = [...latestApplicationData[tableData], ...applicationData]
+        }
+        return await ApplicationDataCollect.updateOne({ templateId }, { $set: { applicationData: latestApplicationData, updateTime: new Date() } }).exec()
+      }
+      return await ApplicationDataCollect.create({ templateId, applicationData, updateTime: new Date() })
+    }
+    catch (error) {
+      console.error('追加数据失败:', error)
+      throw error
+    }
+  }
+
   // 依据userId与templateId更新应用数据
   async updateApplicationData(userId: string, templateId: string, applicationData: any) {
     try {
