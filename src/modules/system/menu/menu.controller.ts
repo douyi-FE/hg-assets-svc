@@ -39,7 +39,7 @@ export class MenuController {
   @Get()
   @ApiOperation({ summary: '获取所有菜单列表' })
   @ApiResult({ type: [MenuItemInfo] })
-  @Perm(permissions.LIST)
+  // @Perm(permissions.LIST)
   async list(@Query() dto: MenuQueryDto) {
     return this.menuService.list(dto)
   }
