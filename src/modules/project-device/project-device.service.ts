@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common'
 import { cloneDeep } from 'lodash'
 import ProjectDeviceCollect from '~/monogdb/models/project-device'
 import { getSummaryData, summaryConfig } from './summary-config'
+// 引入用户模块
+import { UserService } from '../user/user.service'
 
 @Injectable()
 export class ProjectDeviceService {
-  constructor() { }
+  constructor(
+    private readonly userService: UserService,
+  ) { }
 
   // 根据userId, type, project, device, engineer 获取项目设备数据
   // 先查出userId 对应的数据，再查出所有数据，分成两个属性保存并返回
@@ -25,6 +29,17 @@ export class ProjectDeviceService {
       let resultsWithProjectData = null
       let projectDeviceSummaryByType = null
       if (results.length > 0) {
+        // 获取用户列表
+        const userInfo = await this.userService.list({
+          page: 1,
+          pageSize: 10000,
+        })
+        const userInfoArr = []
+        if (userInfo && userInfo.items) {
+          userInfo.items.forEach((user) => {
+            userInfoArr.push(user)
+          })
+        }
         const projectBaseMessage = {
           templateId: results[0].templateId,
           userId: results[0].userId,
@@ -34,31 +49,42 @@ export class ProjectDeviceService {
           engineer: results[0].engineer,
         }
         const projectData = results[0].projectData
-        let tableName = ''
-        Object.keys(projectData).forEach((key) => {
-          if (key.startsWith('table')) {
-            tableName = key
-          }
-        })
-        const tableData = []
-        results.forEach((item) => {
-          tableData.push(...item.projectData[tableName])
-        })
-        projectData[tableName] = tableData
-        resultsWithProjectData = {
-          ...projectBaseMessage,
-          projectData,
-        }
-        const sumConfig = summaryConfig[type]
-        if (sumConfig) {
-          const classColumns = sumConfig.classColumns
-          const summaryColumns = sumConfig.summaryColumns
-          const summaryData = getSummaryData(tableData, classColumns, summaryColumns)
-          const summaryProjectData = cloneDeep(projectData)
-          summaryProjectData[tableName] = summaryData
-          projectDeviceSummaryByType = {
+        const sheets = Object.keys(projectData)
+        if (sheets.length > 0) {
+          let tableName = ''
+          Object.keys(projectData[sheets[0]]).forEach((key) => {
+            if (key.startsWith('table')) {
+              tableName = key
+            }
+          })
+          const tableData = []
+          results.forEach((item) => {
+            const itemUserId = Number.parseInt(item.userId)
+            const itemUserName = userInfoArr.find(user => user.id === itemUserId)?.username
+            if (item.projectData[sheets[0]][tableName]) {
+              item.projectData[sheets[0]][tableName].forEach((d) => {
+                d.userId = itemUserId
+                d['创建人'] = itemUserName
+              })
+              tableData.push(...item.projectData[sheets[0]][tableName])
+            }
+          })
+          projectData[sheets[0]][tableName] = tableData
+          resultsWithProjectData = {
             ...projectBaseMessage,
-            projectData: summaryProjectData,
+            projectData,
+          }
+          const sumConfig = summaryConfig[type]
+          if (sumConfig) {
+            const classColumns = sumConfig.classColumns
+            const summaryColumns = sumConfig.summaryColumns
+            const summaryData = getSummaryData(tableData, classColumns, summaryColumns)
+            const summaryProjectData = cloneDeep(projectData)
+            summaryProjectData[sheets[0]][tableName] = summaryData
+            projectDeviceSummaryByType = {
+              ...projectBaseMessage,
+              projectData: summaryProjectData,
+            }
           }
         }
       }
