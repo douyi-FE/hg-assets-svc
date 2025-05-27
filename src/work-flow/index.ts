@@ -1,5 +1,6 @@
 import FlowExecuteCollect from '~/monogdb/models/flow-execute'
 import { BpmnEngineWrapper } from './core/bpmn-engine'
+import { ProcessInstanceStatus } from './models/process-instance'
 import { InstanceService } from './services/instance.service'
 
 class WorkFlowService {
@@ -16,7 +17,9 @@ class WorkFlowService {
    */
   async initializeFlow() {
     // 初始化流程定义
-    const instances: any[] = await FlowExecuteCollect.find()
+    const instances: any[] = await FlowExecuteCollect.find().where({
+      status: { $ne: ProcessInstanceStatus.COMPLETED },
+    })
     for (const instance of instances) {
       this.service.resumeInstance(instance)
     }

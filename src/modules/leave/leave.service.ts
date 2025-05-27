@@ -1,14 +1,34 @@
 import { Injectable } from '@nestjs/common'
+import FlowExecuteCollect from '~/monogdb/models/flow-execute'
 import LeaveCollect from '~/monogdb/models/leave'
+import { FlowAuthUtil } from '~/utils/flow-auth.util'
+import { DeptService } from '../system/dept/dept.service'
+import { UserService } from '../user/user.service'
 
 @Injectable()
 export class LeaveService {
-  constructor() {}
+  constructor(private readonly flowAuthUtil: FlowAuthUtil, private readonly deptService: DeptService, private readonly userService: UserService) {}
 
   // 获取所有请假数据
-  async getLeaveData() {
+  async getLeaveData(userInfo: any) {
     const result = await LeaveCollect.find().exec()
-    return result.map(item => item.toObject()).map((item: any) => ({ ...item, _id: item._id.buffer.toString('hex') }))
+    const flowExecute = await FlowExecuteCollect.find({ businessId: { $in: result.map((item: any) => item._id.buffer.toString('hex')) } }).exec()
+    const list = result.map(item => item.toObject()).map((item: any) => {
+      const _id = item._id.buffer.toString('hex')
+      const flowExecuteData = (flowExecute.find((flowExecuteItem: any) => flowExecuteItem.businessId === _id) as any)?._doc || {}
+      return { ...item, _id, flowExecute: flowExecuteData.tasks, initiatorId: flowExecuteData.initiatorId }
+    })
+
+    const resultList = []
+    for (const item of list) {
+      const hasPermission = await this.flowAuthUtil.hasNodeApprovalPermission(userInfo, item.initiatorId, item.flowExecute)
+      console.log('hasPermission', hasPermission)
+      if (hasPermission) {
+        resultList.push(item)
+      }
+    }
+    console.log('list', resultList)
+    return resultList
   }
 
   // 新增请假

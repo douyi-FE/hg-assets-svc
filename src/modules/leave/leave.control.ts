@@ -2,7 +2,9 @@ import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { uniqueId } from 'lodash'
 import { ApiSecurityAuth } from '~/common/decorators/swagger.decorator'
+import { AuthUser } from '../auth/decorators/auth-user.decorator'
 import { definePermission } from '../auth/decorators/permission.decorator'
+import { UserService } from '../user/user.service'
 import { LeaveService } from './leave.service'
 
 export const permissions = definePermission('human:leave', {
@@ -16,13 +18,17 @@ export const permissions = definePermission('human:leave', {
 @ApiSecurityAuth()
 @Controller('leave')
 export class LeaveController {
-  constructor(private readonly leaveService: LeaveService) {}
+  constructor(private readonly leaveService: LeaveService, private userService: UserService) {}
 
   // 获取所有请假数据
   @Get('list')
   @ApiOperation({ summary: '获取所有请假数据' })
-  async getLeaveData() {
-    return this.leaveService.getLeaveData()
+  async getLeaveData(@AuthUser() user: IAuthUser) {
+    const userInfo = await this.userService.getAccountInfo(user.uid)
+    const leaveData = await this.leaveService.getLeaveData(userInfo)
+    return leaveData.filter((item) => {
+      return item
+    })
   }
 
   // 新增请假
