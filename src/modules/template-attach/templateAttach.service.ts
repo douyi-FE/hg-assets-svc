@@ -63,10 +63,8 @@ export class TemplateAttachService {
       const fileContent = attachment.fileContent
       // 将 base64 编码的文件内容转换为 Buffer
       const fileBuffer = Buffer.from(fileContent, 'base64')
-      // 将 Buffer 转换为 Blob
-      const fileBlob = new Blob([fileBuffer])
-      // 将 Blob 添加到 zip 中
-      zip.file(attachment.originalFileName, fileBlob)
+      // 直接将 Buffer 添加到 zip 中
+      zip.file(attachment.originalFileName, fileBuffer)
     })
     const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' })
     return zipBuffer

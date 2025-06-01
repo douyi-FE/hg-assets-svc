@@ -3,7 +3,7 @@ import ApplicationDataCollect from '~/monogdb/models/application-data'
 
 @Injectable()
 export class ApplicationDataService {
-  constructor() {}
+  constructor() { }
 
   // 依据userId与templateId获取应用数据
   async getApplicationDataByUserId(query: any) {
@@ -99,14 +99,28 @@ export class ApplicationDataService {
         .exec()
       const dictData = results[0] ? results[0].toObject() : null
       if (dictData) {
-        const { applicationData } = dictData
+        let { applicationData } = dictData
+        if (typeof applicationData === 'string') {
+          try {
+            applicationData = JSON.parse(applicationData)
+          }
+          catch (error) {
+            console.error('解析应用数据失败:', error)
+            throw error
+          }
+        }
         if (applicationData) {
           let filteredDictData = []
-          Object.keys(applicationData).forEach((key) => {
-            if (key.startsWith('table')) {
-              filteredDictData = applicationData[key]
-            }
-          })
+          // 只取第一个sheet的数据
+          const sheetName = Object.keys(applicationData)[0]
+          if (sheetName) {
+            const sheetData = applicationData[sheetName]
+            Object.keys(sheetData).forEach((key) => {
+              if (key.startsWith('table')) {
+                filteredDictData = sheetData[key]
+              }
+            })
+          }
           if (filteredDictData) {
             if (dictName) {
               // 从 filteredDictData 数组中根据 ‘table_name’ 属性过滤出对应的字典数据
