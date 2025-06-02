@@ -1,11 +1,6 @@
-import { EventEmitter } from 'node:events'
-import * as elements from 'bpmn-elements'
-import { Engine, Instance } from 'bpmn-engine'
-import BpmnModdle from 'bpmn-moddle'
-import Serializer, { TypeResolver } from 'moddle-context-serializer'
-import { nanoid } from 'nanoid'
+import { Instance } from 'bpmn-engine'
 import flowDesignCollect from '~/monogdb/models/flow-design'
-
+import { BpmnEngineClass } from './engine'
 /**
  * BPMN引擎封装类
  * 封装引擎核心操作并实现事件转发
@@ -13,90 +8,9 @@ import flowDesignCollect from '~/monogdb/models/flow-design'
 export class BpmnEngineWrapper {
   // 增加明确的属性类型声明
   private readonly executionCache: Map<string, Instance>
-  private engine: Engine
-  public readonly eventEmitter = new EventEmitter()
 
   constructor() {
     this.executionCache = new Map() // 明确初始化
-    this.engine = new Engine({
-      name: 'add source',
-    })
-  }
-
-  async getContext(source, options: any = {}) {
-    const moddleContext = await this.getModdleContext(source, options)
-
-    if (moddleContext.warnings.length > 0) {
-      moddleContext.warnings.forEach(({ error, message, element, property }) => {
-        if (error)
-          return console.error(message)
-        console.error(`<${element.id}> ${property}:`, message)
-      })
-    }
-
-    const types = TypeResolver({
-      ...elements,
-      ...options?.elements,
-    })
-
-    return Serializer(moddleContext, types, options?.extendFn)
-  }
-
-  getModdleContext(source, options): any {
-    const bpmnModdle = new BpmnModdle(options)
-    return bpmnModdle.fromXML(source)
-  }
-
-  /**
-   * 注册引擎事件钩子
-   * 将原生事件转换为应用层事件
-   */
-  public registerEngineHooks(): EventEmitter {
-    const listener = new EventEmitter()
-    listener.on('activity.enter', async (elementApi, engineApi) => {
-      // 开始节点自动进入下一节点
-      if (elementApi.type === 'bpmn:StartEvent') {
-        await engineApi.signal()
-      }
-      // 结束节点自动结束流程
-      else if (elementApi.type === 'bpmn:EndEvent') {
-        await engineApi.signal()
-      }
-
-      // 获取节点的扩展属性
-      const element = elementApi.broker.getState().element
-      if (element && element.extensionElements) {
-        const properties = element.extensionElements.values.find(el => el.$type === 'camunda:Properties')
-        if (properties) {
-          console.log('节点属性配置:')
-          properties.properties.forEach((prop) => {
-            console.log(`  ${prop.name}: ${prop.value}`)
-          })
-        }
-      }
-      console.log(`${elementApi.type} <${elementApi.id}> in ${elementApi.name} of ${engineApi.name} is entered`)
-    })
-
-    listener.on('activity.wait', (elementApi, instance) => {
-      // 获取等待节点的扩展属性
-      const element = elementApi.broker.getState().element
-      if (element && element.extensionElements) {
-        const properties = element.extensionElements.values.find(el => el.$type === 'camunda:Properties')
-        if (properties) {
-          console.log('等待节点属性配置:')
-          properties.properties.forEach((prop) => {
-            console.log(`  ${prop.name}: ${prop.value}`)
-          })
-        }
-      }
-      console.log(`${elementApi.type} <${elementApi.id}> in ${elementApi.name} of ${instance.name} is waiting for input`)
-    })
-
-    listener.on('activity.end', (activity) => {
-      console.log(activity.name, 'is ending')
-      this.executionCache.delete(activity.executionId)
-    })
-    return listener
   }
 
   /**
@@ -109,31 +23,12 @@ export class BpmnEngineWrapper {
     try {
       const flow: any = await flowDesignCollect.findById(flowId)
       const flowXml = flow._doc.xml
-      const moddleContext = await this.getModdleContext(flowXml, {})
-      const sourceContext = await this.getContext(flowXml)
-      this.engine.addSource({
-        sourceContext,
+      const engine = new BpmnEngineClass(undefined, {
+        executionCache: this.executionCache,
       })
-      const listener = this.registerEngineHooks()
-      const executeObj: any = await this.engine.execute({
-        variables,
-        listener,
-      })
-      const state = await this.engine.getState()
-      const definition: any = await executeObj.definitions[0]
-      const instanceId = `${definition.context.id}-${nanoid(16)}`
-      this.executionCache.set(instanceId, executeObj)
-      const tasks = executeObj.getPostponed().map((task) => {
-        const taskExtension = (moddleContext.elementsById[task.id].extensionElements?.values || []).map((el) => {
-          const obj = {}
-          el.$children.forEach((child) => {
-            obj[child.name] = child.value
-          })
-          return obj
-        })
-        return { name: task.name, type: task.type, id: task.id, properties: taskExtension }
-      })
-      return { instanceId, state, tasks }
+      const { execution, info } = await engine.createEngine(flowXml, variables)
+      this.executionCache.set(info.instanceId, execution)
+      return info
     }
     catch (error) {
       throw new Error(`实例创建失败: ${error instanceof Error ? error.message : String(error)}`)
@@ -245,30 +140,15 @@ export class BpmnEngineWrapper {
    * @param tasks 待执行任务
    * @returns 新实例ID
    */
-  async restoreInstance(instanceId: string, state?: object, tasks?: any[]): Promise<object> {
+  async restoreInstance(instanceId: string, state?: object, tasks?: any[]): Promise<{ instanceId: string, state: any, tasks: any[] }> {
     try {
-      this.engine = new Engine().recover(state)
-      const listener = this.registerEngineHooks()
-      await this.engine.resume({ listener })
-      const executeObj: any = await this.engine.execute()
-      // 执行到指定节点
-      function goToTask(taskIds: string[]) {
-        const tasks = executeObj.getPostponed()
-        const task = tasks.find(task => taskIds.includes(task.id))
-        if (task === undefined) {
-          tasks.forEach((tk) => {
-            tk.signal()
-          })
-        }
-        else {
-          goToTask(taskIds)
-        }
-      }
-      goToTask(tasks.map(task => task.id))
-
-      this.executionCache.set(instanceId, executeObj)
-      const newState = await this.engine.getState()
-      return { instanceId, newState }
+      // 恢复引擎状态
+      const engine = new BpmnEngineClass(undefined, {
+        executionCache: this.executionCache,
+      })
+      const { execution, info } = await engine.restoreInstance(instanceId, state, tasks)
+      this.executionCache.set(info.instanceId, execution)
+      return info
     }
     catch (error) {
       throw new Error(`恢复失败: ${error instanceof Error ? error.message : String(error)}`)

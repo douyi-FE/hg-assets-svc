@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common'
 import FlowExecuteCollect from '~/monogdb/models/flow-execute'
 import LeaveCollect from '~/monogdb/models/leave'
 import { FlowAuthUtil } from '~/utils/flow-auth.util'
-import { DeptService } from '../system/dept/dept.service'
-import { UserService } from '../user/user.service'
 
 @Injectable()
 export class LeaveService {
-  constructor(private readonly flowAuthUtil: FlowAuthUtil, private readonly deptService: DeptService, private readonly userService: UserService) {}
+  constructor(
+    private readonly flowAuthUtil: FlowAuthUtil,
+  ) {}
 
   // 获取所有请假数据
   async getLeaveData(userInfo: any) {
@@ -21,13 +21,10 @@ export class LeaveService {
 
     const resultList = []
     for (const item of list) {
-      const hasPermission = await this.flowAuthUtil.hasNodeApprovalPermission(userInfo, item.initiatorId, item.flowExecute)
-      console.log('hasPermission', hasPermission)
-      if (hasPermission) {
-        resultList.push(item)
-      }
+      const hasPermission = await this.flowAuthUtil.hasNodeApprovalPermission(userInfo, item, item.flowExecute)
+      item.hasPermission = hasPermission
+      resultList.push(item)
     }
-    console.log('list', resultList)
     return resultList
   }
 

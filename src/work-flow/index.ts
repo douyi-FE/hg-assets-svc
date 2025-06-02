@@ -21,7 +21,7 @@ class WorkFlowService {
       status: { $ne: ProcessInstanceStatus.COMPLETED },
     })
     for (const instance of instances) {
-      this.service.resumeInstance(instance)
+      await this.service.resumeInstance(instance)
     }
   }
 

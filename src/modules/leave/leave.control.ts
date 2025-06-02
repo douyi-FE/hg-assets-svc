@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
-import { uniqueId } from 'lodash'
+import { nanoid } from 'nanoid'
 import { ApiSecurityAuth } from '~/common/decorators/swagger.decorator'
 import { AuthUser } from '../auth/decorators/auth-user.decorator'
 import { definePermission } from '../auth/decorators/permission.decorator'
@@ -35,7 +35,7 @@ export class LeaveController {
   @Post('create')
   @ApiOperation({ summary: '新增请假' })
   async addLeaveData(@Body() leaveData: any) {
-    const applyCode = `LEAVE-${uniqueId()}`
+    const applyCode = `LEAVE-${nanoid()}`
     const approverStatus = 'pending'
     const { flowId, initiatorId, ...rest } = leaveData
     return this.leaveService.addLeaveData({

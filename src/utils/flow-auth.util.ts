@@ -20,7 +20,8 @@ export class FlowAuthUtil {
   }
 
   // 部门领导审批
-  async isDepartmentLeader() {
+  async isDepartmentLeader(userInfo: any, initiatorDeptList: any[]) {
+    console.log('isDepartmentLeader', userInfo, initiatorDeptList)
     return true
   }
 
@@ -30,11 +31,23 @@ export class FlowAuthUtil {
   }
 
   // 判断是否有节点审批权限
-  async hasNodeApprovalPermission(userInfo: any, initiatorId: any, nodeProperties: any) {
+  async hasNodeApprovalPermission(userInfo: any, record: any, tasks: any) {
+    const { initiatorId, employeeId } = record
     const initiatorInfo: any = await this.userService.getAccountInfo(initiatorId)
     const { items: initiatorDeptList = [] } = await this.userService.list({ deptId: initiatorInfo.dept.id })
 
-    const { properties = {}, name } = nodeProperties[0] || {}
+    // 发起人是当前用户直接过
+    if (employeeId.toString() === userInfo.id.toString()) {
+      return true
+    }
+
+    // 没有任务，代表审批完成，如果是操作人，则直接过
+    if (tasks.length === 0) {
+      return employeeId.toString() === userInfo.id.toString()
+    }
+
+    // 有任务，判断是否需要审批
+    const { properties = {}, name } = tasks[0] || {}
     if (name === '发起申请') {
       return this.isInitiatorDirectPass()
     }
@@ -43,7 +56,7 @@ export class FlowAuthUtil {
         case 'leader':
           return this.isDirectLeader(userInfo, initiatorDeptList)
         case 'department':
-          return this.isDepartmentLeader()
+          return this.isDepartmentLeader(userInfo, initiatorDeptList)
         case 'approver':
           return this.isAssignee()
       }
