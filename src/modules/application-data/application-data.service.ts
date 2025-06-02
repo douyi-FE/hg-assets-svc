@@ -49,10 +49,14 @@ export class ApplicationDataService {
       if (latestData) {
         // 把参数数据追加到最新的数据中
         const { applicationData: latestApplicationData } = latestData as any
-        const tableData = Object.keys(latestApplicationData).find(key => key.startsWith('table'))
-        if (tableData) {
-          latestApplicationData[tableData] = [...latestApplicationData[tableData], ...applicationData]
-        }
+        Object.keys(applicationData).forEach((key) => {
+          if (latestApplicationData[key]) {
+            const tableKey = Object.keys(latestApplicationData[key]).find(item => item.startsWith('table'))
+            if (tableKey) {
+              latestApplicationData[key][tableKey] = [...latestApplicationData[key][tableKey], ...applicationData[key]]
+            }
+          }
+        })
         return await ApplicationDataCollect.updateOne({ templateId }, { $set: { applicationData: latestApplicationData, updateTime: new Date() } }).exec()
       }
       return await ApplicationDataCollect.create({ templateId, applicationData, updateTime: new Date() })
