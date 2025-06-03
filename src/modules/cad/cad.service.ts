@@ -7,7 +7,7 @@ export class CadService {
 
   // 获取所有制图数据
   async getCadData() {
-    const result = await CadCollect.find().exec()
+    const result = await CadCollect.find({}, { name: 1, createdAt: 1, updatedAt: 1 }).exec()
     return result.map(item => item.toObject()).map((item: any) => {
       return {
         ...item,

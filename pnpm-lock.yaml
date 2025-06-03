@@ -83,9 +83,12 @@ importers:
       axios:
         specifier: ^1.7.7
         version: 1.7.7
+      bpmn-elements:
+        specifier: ^17.1.0
+        version: 17.1.0
       bpmn-engine:
         specifier: ^23.0.2
-        version: 23.0.2(smqp@9.0.5)
+        version: 23.0.2(smqp@9.0.6)
       bpmn-moddle:
         specifier: ^9.0.1
         version: 9.0.1
@@ -134,6 +137,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      moddle-context-serializer:
+        specifier: ^4.4.0
+        version: 4.4.0(bpmn-moddle@9.0.1)
       mongodb:
         specifier: ^6.12.0
         version: 6.12.0(socks@2.8.4)
@@ -2740,6 +2746,9 @@ packages:
 
   bpmn-elements@16.2.2:
     resolution: {integrity: sha512-pXowYacnaUfiWrnfEmlypNqOC6cVSg+iiyymmbLp42KRMIHnBVvIZ4MV8VxnUxLEHup4UtSyuOGjLmfNxW/nng==}
+
+  bpmn-elements@17.1.0:
+    resolution: {integrity: sha512-5NPw0Mrcy94JxmqkiASJRWz7qkq02aPoegt1bnKqHuBnJdH3jv6DjnhM6LewyWR0NcJ5BRKMP5PT59zrmOWCcQ==}
 
   bpmn-engine@23.0.2:
     resolution: {integrity: sha512-MVMK00a+4PO7LrxCTUzwbT/f1U/tbRco+uvCXIe8l815qCpotAoAckC9CHIwcfYJAzlkmXCno40xgg5+ZXg/4A==}
@@ -5423,8 +5432,8 @@ packages:
   mockdate@3.0.5:
     resolution: {integrity: sha512-iniQP4rj1FhBdBYS/+eQv7j1tadJ9lJtdzgOpvsOHng/GbcDh2Fhdeq+ZRldrPYdXvCyfFUmFeEwEGXZB5I/AQ==}
 
-  moddle-context-serializer@4.2.1:
-    resolution: {integrity: sha512-pjEdXBvktU7wep7sv12EGCojq2oYWba9D92b6k9UYeYJvQcpM8nAmgpnDtdkxCovPTEoCKYqUMUtCKeh5lh6GQ==}
+  moddle-context-serializer@4.4.0:
+    resolution: {integrity: sha512-N+/RDuaCn9QqfeFy3PngwKqT7NxHziGMYJo3W3fYW45amm62jxRV9jUxVKFRb2FY4Jhhi7C9S4sKqa6zXT+p6w==}
     peerDependencies:
       bpmn-moddle: '>=6'
 
@@ -6515,6 +6524,9 @@ packages:
 
   smqp@9.0.5:
     resolution: {integrity: sha512-g0GPAZXGSCxu0PcOd5St56WUWKy32WbyZTzULBOiFM8/CgJ8mUslx6ba31PosonVEm6lQJnG5YsgNnasBKM75A==}
+
+  smqp@9.0.6:
+    resolution: {integrity: sha512-NMtu5d8d86Xz/t17Ut79phTqrHB8SuQwHtZA2tqWN5HxrxtyfSlk3aMIWTqYXaFOjqV2fKQBJPPsMHXcrYZc/w==}
 
   socket.io-adapter@2.5.5:
     resolution: {integrity: sha512-eLDQas5dzPgOWCk9GuuJC2lBqItuhKI4uxGgo9aIV7MYbk2h9Q6uULEh8WBzThoI7l+qU9Ast9fVUmkqPP9wYg==}
@@ -10391,13 +10403,18 @@ snapshots:
       '@0dep/piso': 2.4.0
       smqp: 9.0.5
 
-  bpmn-engine@23.0.2(smqp@9.0.5):
+  bpmn-elements@17.1.0:
+    dependencies:
+      '@0dep/piso': 2.4.0
+      smqp: 9.0.6
+
+  bpmn-engine@23.0.2(smqp@9.0.6):
     dependencies:
       bpmn-elements: 16.2.2
       bpmn-moddle: 9.0.1
       debug: 4.3.7
-      moddle-context-serializer: 4.2.1(bpmn-moddle@9.0.1)
-      smqp: 9.0.5
+      moddle-context-serializer: 4.4.0(bpmn-moddle@9.0.1)
+      smqp: 9.0.6
     transitivePeerDependencies:
       - supports-color
 
@@ -13999,7 +14016,7 @@ snapshots:
 
   mockdate@3.0.5: {}
 
-  moddle-context-serializer@4.2.1(bpmn-moddle@9.0.1):
+  moddle-context-serializer@4.4.0(bpmn-moddle@9.0.1):
     dependencies:
       bpmn-moddle: 9.0.1
 
@@ -15256,6 +15273,8 @@ snapshots:
   smart-buffer@4.2.0: {}
 
   smqp@9.0.5: {}
+
+  smqp@9.0.6: {}
 
   socket.io-adapter@2.5.5:
     dependencies:
