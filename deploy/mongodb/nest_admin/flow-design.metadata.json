@@ -1,0 +1,1 @@
+{ "indexes": [{ "v": { "$numberInt": "2" }, "key": { "_id": { "$numberInt": "1" } }, "name": "_id_" }], "uuid": "d90ff16c59d24f39b34098273bf8774a", "collectionName": "flow-design", "type": "collection" }
