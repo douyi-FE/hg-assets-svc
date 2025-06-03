@@ -17,7 +17,7 @@ export const permissions = definePermission('project:cad', {
 export class CadController {
   constructor(private readonly cadService: CadService) {}
 
-  // 获取所有制图数据
+  // 获取所有制图数 据
   @Get('list')
   @ApiOperation({ summary: '获取所有制图数据' })
   async getCadData() {
