@@ -21,6 +21,7 @@ import { AuthModule } from './modules/auth/auth.module'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { RbacGuard } from './modules/auth/guards/rbac.guard'
 import { BuildInModule } from './modules/build-in-ejs/builtin.module'
+import { CadModule } from './modules/cad/cad.module'
 import { DeviceModule } from './modules/device/device.module'
 import { EngineerModule } from './modules/engineer/engineer.module'
 import { FileStorageModule } from './modules/file-storage/fileStorage.module'
@@ -138,6 +139,8 @@ import { SocketModule } from './socket/socket.module'
     FlowBindModule,
     // 流程执行管理
     FlowExecuteModule,
+    // 制图管理
+    CadModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
