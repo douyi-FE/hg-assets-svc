@@ -20,8 +20,9 @@ export class CadController {
   // 获取所有制图数 据
   @Get('list')
   @ApiOperation({ summary: '获取所有制图数据' })
-  async getCadData() {
-    return this.cadService.getCadData()
+  async getCadData(@Query() query: any) {
+    const { name = '' } = query
+    return this.cadService.getCadData({ name })
   }
 
   // 新增制图
@@ -35,8 +36,8 @@ export class CadController {
   @Post('update')
   @ApiOperation({ summary: '更新制图' })
   async updateCadData(@Body() cadData: any) {
-    const { id, ...rest } = cadData
-    return this.cadService.updateCadData(id, rest)
+    const { detailId: id, projectName: name, ...rest } = cadData
+    return this.cadService.updateCadData(id, { name, ...rest })
   }
 
   // 删除制图

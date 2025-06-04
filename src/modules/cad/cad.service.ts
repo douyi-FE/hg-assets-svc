@@ -6,8 +6,9 @@ export class CadService {
   constructor() {}
 
   // 获取所有制图数据
-  async getCadData() {
-    const result = await CadCollect.find({}, { name: 1, createdAt: 1, updatedAt: 1 }).exec()
+  async getCadData(query: any) {
+    const { name = '' } = query
+    const result = await CadCollect.find({}, { name: 1, createdAt: 1, updatedAt: 1 }).where({ name: { $regex: name } }).exec()
     return result.map(item => item.toObject()).map((item: any) => {
       return {
         ...item,
