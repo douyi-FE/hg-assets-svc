@@ -12,8 +12,8 @@ export class DeviceController {
   @Get('/list')
   @ApiOperation({ summary: '获取装置列表' })
   async list(@Query() dto: any) {
-    const { projectCode = '' } = dto
-    return this.deviceService.getDeviceListByProject(projectCode)
+    const { projectId = '' } = dto
+    return this.deviceService.getDeviceListByProject(projectId)
   }
 
   @Post('data')

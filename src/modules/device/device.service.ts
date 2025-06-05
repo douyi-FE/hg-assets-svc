@@ -22,8 +22,12 @@ export class DeviceService {
   }
 
   // 依据项目获取装置列表
-  async getDeviceListByProject(projectCode: string): Promise<any[]> {
-    return DeviceCollect.find({ project_code: projectCode }).then(res => res.map((item: any) => ({ ...item._doc, _id: item._id.buffer.toString('hex') })))
+  async getDeviceListByProject(projectId: string): Promise<any[]> {
+    return DeviceCollect.find({ project_id: projectId })
+      .then(res => res.map((item: any) => ({
+        ...item._doc,
+        _id: item._id.buffer.toString('hex'),
+      })))
   }
 
   // 删除装置

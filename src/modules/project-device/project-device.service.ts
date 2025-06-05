@@ -15,15 +15,16 @@ export class ProjectDeviceService {
   // 先查出userId 对应的数据，再查出所有数据，分成两个属性保存并返回
   async getProjectDeviceData(query: any) {
     try {
-      const { userId, type, project, device, engineer } = query
+      const { userId, type, project, device, engineerId, engineer } = query
+      console.log('query:', query)
       const resultsWithUserId = await ProjectDeviceCollect
-        .find({ userId, type, project, device, engineer })
+        .find({ userId, type, project, device, engineerId, engineer })
         .sort({ updateTime: -1 })
         .limit(1)
         .exec()
       const projectDeviceWithUserId = resultsWithUserId[0] ? resultsWithUserId[0].toObject() : null
       const results = await ProjectDeviceCollect
-        .find({ type, project, device, engineer })
+        .find({ type, project, device, engineer, engineerId })
         .sort({ updateTime: -1 })
         .exec()
       let resultsWithProjectData = null
@@ -101,7 +102,7 @@ export class ProjectDeviceService {
   }
 
   // 根据userId, type, project, device, engineer 新增项目设备数据
-  async addProjectDeviceData(userId: string, templateId: string, type: string, project: string, device: string, engineer: string, projectData: any) {
+  async addProjectDeviceData(userId: string, templateId: string, type: string, project: string, device: string, engineer: string, engineerId: string, projectData: any) {
     try {
       const data = {
         userId,
@@ -109,6 +110,7 @@ export class ProjectDeviceService {
         project,
         device,
         engineer,
+        engineerId,
         templateId,
         projectData,
         updateTime: new Date(),
@@ -132,10 +134,10 @@ export class ProjectDeviceService {
   }
 
   // 根据userId, type, project, device, engineer 更新项目设备数据
-  async updateProjectDeviceData(userId: string, templateId: string, type: string, project: string, device: string, engineer: string, projectData: any) {
+  async updateProjectDeviceData(userId: string, templateId: string, type: string, project: string, device: string, engineer: string, engineerId: string, projectData: any) {
     try {
       return await ProjectDeviceCollect.updateOne(
-        { userId, templateId, type, project, device, engineer },
+        { userId, templateId, type, project, device, engineer, engineerId },
         { $set: { projectData, updateTime: new Date() } },
       ).exec()
     }
@@ -146,9 +148,9 @@ export class ProjectDeviceService {
   }
 
   // 根据userId, type, project, device, engineer 删除项目设备数据
-  async deleteProjectDeviceData(userId: string, templateId: string, type: string, project: string, device: string, engineer: string) {
+  async deleteProjectDeviceData(userId: string, templateId: string, type: string, project: string, device: string, engineer: string, engineerId: string) {
     try {
-      return await ProjectDeviceCollect.deleteOne({ userId, templateId, type, project, device, engineer }).exec()
+      return await ProjectDeviceCollect.deleteOne({ userId, templateId, type, project, device, engineer, engineerId }).exec()
     }
     catch (error) {
       console.error('删除项目设备数据失败:', error)

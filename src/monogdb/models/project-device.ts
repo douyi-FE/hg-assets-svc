@@ -7,6 +7,7 @@ export interface IProjectDevice extends Document {
   type: string
   project: string
   device: string
+  engineerId: string
   engineer: string
   updateTime: Date
   createTime: Date
@@ -19,6 +20,7 @@ const projectDeviceSchema: Schema = new Schema({
   type: { type: String, required: true },
   project: { type: String, required: true },
   device: { type: String, required: true },
+  engineerId: { type: String, required: true },
   engineer: { type: String, required: true },
   updateTime: { type: Date, required: true },
   createTime: { type: Date, required: true },

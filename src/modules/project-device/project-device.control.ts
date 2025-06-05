@@ -25,7 +25,7 @@ export class ProjectDeviceController {
   // 依据UserId, type, project, device, engineer 获取项目设备数据
   // 如果 userId 为空，则获取所有数据
   @Get('data')
-  @ApiOperation({ summary: '依据UserId, type, project, device, engineer 获取项目设备数据' })
+  @ApiOperation({ summary: '依据UserId, type, project, device, engineerId, engineer 获取项目设备数据' })
   @Perm(permissions.READ)
   async getProjectDeviceData(@Query() query: any) {
     return this.ProjectDeviceService.getProjectDeviceData(query)
@@ -37,8 +37,8 @@ export class ProjectDeviceController {
   @Perm(permissions.CREATE)
   async addProjectDeviceData(@Body() body: any) {
     try {
-      const { userId, templateId, type, project, device, engineer, projectData } = body
-      const result = await this.ProjectDeviceService.addProjectDeviceData(userId, templateId, type, project, device, engineer, projectData)
+      const { userId, templateId, type, project, device, engineer, engineerId, projectData } = body
+      const result = await this.ProjectDeviceService.addProjectDeviceData(userId, templateId, type, project, device, engineer, engineerId, projectData)
       return {
         code: 200,
         message: '新增项目设备数据成功',
@@ -57,11 +57,11 @@ export class ProjectDeviceController {
 
   // 依据UserId, type, project, device, engineer 更新项目设备数据
   @Put('data')
-  @ApiOperation({ summary: '依据UserId, templateId, project, device, engineer 更新项目设备数据' })
+  @ApiOperation({ summary: '依据UserId, templateId, project, device, engineer, engineerId 更新项目设备数据' })
   @Perm(permissions.UPDATE)
   async updateProjectDeviceData(@Body() body: any) {
-    const { userId, templateId, type, project, device, engineer, projectData } = body
-    return this.ProjectDeviceService.updateProjectDeviceData(userId, templateId, type, project, device, engineer, projectData)
+    const { userId, templateId, type, project, device, engineer, engineerId, projectData } = body
+    return this.ProjectDeviceService.updateProjectDeviceData(userId, templateId, type, project, device, engineer, engineerId, projectData)
   }
 
   // 依据UserId, type, project, device, engineer 删除项目设备数据
@@ -69,7 +69,7 @@ export class ProjectDeviceController {
   @ApiOperation({ summary: '依据UserId, type, project, device, engineer 删除项目设备数据' })
   @Perm(permissions.DELETE)
   async deleteProjectDeviceData(@Body() body: any) {
-    const { userId, templateId, type, project, device, engineer } = body
-    return this.ProjectDeviceService.deleteProjectDeviceData(userId, templateId, type, project, device, engineer)
+    const { userId, templateId, type, project, device, engineer, engineerId } = body
+    return this.ProjectDeviceService.deleteProjectDeviceData(userId, templateId, type, project, device, engineer, engineerId)
   }
 }

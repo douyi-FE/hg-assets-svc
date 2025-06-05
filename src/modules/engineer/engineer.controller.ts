@@ -12,8 +12,8 @@ export class EngineerController {
   @Get('/list')
   @ApiOperation({ summary: '获取工程列表' })
   async list(@Query() dto: any) {
-    const { deviceCode = '' } = dto
-    return this.engineerService.getEngineerListByDevice(deviceCode)
+    const { deviceId = '' } = dto
+    return this.engineerService.getEngineerListByDevice(deviceId)
   }
 
   @Post('data')

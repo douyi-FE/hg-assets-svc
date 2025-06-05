@@ -5,12 +5,14 @@ export interface IEngineer extends Document {
   code: string
   project_code: string
   device_code: string
+  device_id: string
 }
 
 const engineerSchema: Schema = new Schema({
   name: { type: String, required: true },
   code: { type: String },
   device_code: { type: String, required: true },
+  device_id: { type: String, required: true },
   project_code: { type: String, required: true },
 }, { timestamps: true })
 

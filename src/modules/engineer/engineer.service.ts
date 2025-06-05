@@ -21,8 +21,8 @@ export class EngineerService {
   }
 
   // 依据装置获取工程列表
-  async getEngineerListByDevice(deviceCode: string): Promise<any[]> {
-    return EngineerCollect.find({ device_code: deviceCode }).then(res => res.map((item: any) => ({ ...item._doc, _id: item._id.buffer.toString('hex') })))
+  async getEngineerListByDevice(deviceId: string): Promise<any[]> {
+    return EngineerCollect.find({ device_id: deviceId }).then(res => res.map((item: any) => ({ ...item._doc, _id: item._id.buffer.toString('hex') })))
   }
 
   // 删除工程
