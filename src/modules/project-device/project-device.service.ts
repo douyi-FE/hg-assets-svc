@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { cloneDeep } from 'lodash'
 import ProjectDeviceCollect from '~/monogdb/models/project-device'
+import { addDataRowId } from '~/utils/date.util'
 import { getSummaryData, summaryConfig } from './summary-config'
 // 引入用户模块
 import { UserService } from '../user/user.service'
@@ -104,6 +105,7 @@ export class ProjectDeviceService {
   // 根据userId, type, project, device, engineer 新增项目设备数据
   async addProjectDeviceData(userId: string, templateId: string, type: string, project: string, device: string, engineer: string, engineerId: string, projectData: any) {
     try {
+      projectData = addDataRowId(projectData)
       const data = {
         userId,
         type,
@@ -136,6 +138,7 @@ export class ProjectDeviceService {
   // 根据userId, type, project, device, engineer 更新项目设备数据
   async updateProjectDeviceData(userId: string, templateId: string, type: string, project: string, device: string, engineer: string, engineerId: string, projectData: any) {
     try {
+      projectData = addDataRowId(projectData)
       return await ProjectDeviceCollect.updateOne(
         { userId, templateId, type, project, device, engineer, engineerId },
         { $set: { projectData, updateTime: new Date() } },

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { isDate } from 'lodash'
+import { generateUUID } from './tool.util'
 
 const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 const DATE_FORMAT = 'YYYY-MM-DD'
@@ -20,4 +21,28 @@ export function formatToDate(
 
 export function isDateObject(obj: unknown): boolean {
   return isDate(obj) || dayjs.isDayjs(obj)
+}
+
+export function addDataRowId(data: any) {
+  if (!data) {
+    return data
+  }
+  Object.keys(data).forEach((key) => {
+    // sheet 层, 判断 data[key] 是否为对象
+    if (typeof data[key] === 'object' && data[key] !== null) {
+      // 对象层
+      const tableName = Object.keys(data[key]).find(item => item.startsWith('table'))
+      if (tableName) {
+        const tableData = data[key][tableName]
+        if (tableData && tableData.length > 0) {
+          tableData.forEach((item: any) => {
+            if (!item._id || item._id === '') {
+              item._id = generateUUID()
+            }
+          })
+        }
+      }
+    }
+  })
+  return data
 }
