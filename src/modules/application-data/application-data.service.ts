@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import ApplicationDataCollect from '~/monogdb/models/application-data'
-import { addDataRowId } from '~/utils/date.util'
+import { addDataRowHideFields } from '~/utils/date.util'
 
 @Injectable()
 export class ApplicationDataService {
@@ -26,7 +26,7 @@ export class ApplicationDataService {
   async addApplicationData(userId: string, templateId: string, applicationData: any, deptId: number) {
     try {
       // 新增数据添加行id
-      applicationData = addDataRowId(applicationData)
+      applicationData = addDataRowHideFields(applicationData)
       const data = {
         userId,
         deptId,
@@ -48,7 +48,7 @@ export class ApplicationDataService {
   async appendApplicationData(userId: string, templateId: string, applicationData: any) {
     try {
       // 追加数据添加行id
-      applicationData = addDataRowId(applicationData)
+      applicationData = addDataRowHideFields(applicationData)
       // 先查询最新的数据
       const latestData = await ApplicationDataCollect.findOne({ templateId }).sort({ updateTime: -1 }).exec()
       if (latestData) {
@@ -75,7 +75,7 @@ export class ApplicationDataService {
   // 依据userId与templateId更新应用数据
   async updateApplicationData(userId: string, templateId: string, applicationData: any) {
     try {
-      applicationData = addDataRowId(applicationData)
+      applicationData = addDataRowHideFields(applicationData)
       return await ApplicationDataCollect.updateOne(
         { userId, templateId },
         { $set: { applicationData, updateTime: new Date() } },

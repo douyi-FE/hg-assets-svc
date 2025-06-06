@@ -23,7 +23,7 @@ export function isDateObject(obj: unknown): boolean {
   return isDate(obj) || dayjs.isDayjs(obj)
 }
 
-export function addDataRowId(data: any) {
+export function addDataRowHideFields(data: any, userId: string = null) {
   if (!data) {
     return data
   }
@@ -38,6 +38,10 @@ export function addDataRowId(data: any) {
           tableData.forEach((item: any) => {
             if (!item._id || item._id === '') {
               item._id = generateUUID()
+            }
+            item._sheet = key
+            if (userId) {
+              item._userId = userId
             }
           })
         }

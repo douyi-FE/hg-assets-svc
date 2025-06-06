@@ -39,6 +39,7 @@ export class ProjectDeviceController {
     try {
       const { userId, templateId, type, project, device, engineer, engineerId, projectData } = body
       const result = await this.ProjectDeviceService.addProjectDeviceData(userId, templateId, type, project, device, engineer, engineerId, projectData)
+      await this.ProjectDeviceService.updateProjectDeviceDataComments(userId, templateId, type, project, device, engineer, engineerId, projectData)
       return {
         code: 200,
         message: '新增项目设备数据成功',

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { cloneDeep } from 'lodash'
 import ProjectDeviceCollect from '~/monogdb/models/project-device'
-import { addDataRowId } from '~/utils/date.util'
+import { addDataRowHideFields } from '~/utils/date.util'
 import { getSummaryData, summaryConfig } from './summary-config'
 // 引入用户模块
 import { UserService } from '../user/user.service'
@@ -105,7 +105,7 @@ export class ProjectDeviceService {
   // 根据userId, type, project, device, engineer 新增项目设备数据
   async addProjectDeviceData(userId: string, templateId: string, type: string, project: string, device: string, engineer: string, engineerId: string, projectData: any) {
     try {
-      projectData = addDataRowId(projectData)
+      projectData = addDataRowHideFields(projectData)
       const data = {
         userId,
         type,
@@ -135,10 +135,53 @@ export class ProjectDeviceService {
     }
   }
 
+  // 根据 遍历所有汇总表数据，提取所有 _comments 不为空的数据，根据 templateId 和 数据的 userId 查询出对应的数据，再根据数据行的 _id 更新 _comments 数据
+  async updateProjectDeviceDataComments(userId: string, templateId: string, type: string, project: string, device: string, engineer: string, engineerId: string, projectData: any) {
+    try {
+      // 1. 先遍历汇总表中所有数据，提取所有 _comments 不为空的数据
+      const summaryData = projectData.summary
+      if (summaryData) {
+        Object.keys(summaryData).forEach((key) => {
+          const sheetData = summaryData[key]
+          if (sheetData) {
+            const tableName = Object.keys(sheetData).find(item => item.startsWith('table'))
+            if (tableName) {
+              const tableData = sheetData[tableName]
+              if (tableData) {
+                tableData.forEach(async (item) => {
+                  if (item._comments && item._comments.length > 0) {
+                    // 2. 根据 templateId 和 数据的 userId 查询出对应的数据
+                    const data = await ProjectDeviceCollect.findOne({ userId, templateId, type, project, device, engineer, engineerId }).exec()
+                    let isUpdate = false
+                    if (data) {
+                      data.projectData[key][tableName].forEach((d) => {
+                        if (d._id === item._id) {
+                          d._comments = item._comments
+                          isUpdate = true
+                        }
+                      })
+                    }
+                    if (isUpdate) {
+                      await ProjectDeviceCollect.updateOne({ userId, templateId, type, project, device, engineer, engineerId }, { $set: { projectData: data.projectData } }).exec()
+                    }
+                  }
+                })
+              }
+            }
+          }
+        })
+      }
+    }
+    catch (error) {
+      console.error('更新数据批注失败:', error)
+      throw error
+    }
+  }
+
   // 根据userId, type, project, device, engineer 更新项目设备数据
   async updateProjectDeviceData(userId: string, templateId: string, type: string, project: string, device: string, engineer: string, engineerId: string, projectData: any) {
     try {
-      projectData = addDataRowId(projectData)
+      projectData = addDataRowHideFields(projectData)
       return await ProjectDeviceCollect.updateOne(
         { userId, templateId, type, project, device, engineer, engineerId },
         { $set: { projectData, updateTime: new Date() } },
