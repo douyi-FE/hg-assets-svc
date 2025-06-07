@@ -23,7 +23,7 @@ export function isDateObject(obj: unknown): boolean {
   return isDate(obj) || dayjs.isDayjs(obj)
 }
 
-export function addDataRowHideFields(data: any, userId: string = null) {
+export function addDataRowHideFields(data: any, userName: string = null) {
   if (!data) {
     return data
   }
@@ -40,8 +40,9 @@ export function addDataRowHideFields(data: any, userId: string = null) {
               item._id = generateUUID()
             }
             item._sheet = key
-            if (userId) {
-              item._userId = userId
+            if (userName) {
+              item._user = userName
+              item['创建人'] = userName
             }
           })
         }

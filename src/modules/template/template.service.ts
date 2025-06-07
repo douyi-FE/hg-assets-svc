@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common'
 import TemplateCollect from '~/monogdb/models/template'
-import { addDataRowHideFields } from '~/utils/date.util'
 
 @Injectable()
 export class TemplateService {
@@ -27,8 +26,7 @@ export class TemplateService {
   }
 
   async create(template: any) {
-    let { name, code, note, status, isBuildIn, file, initDataSource } = template
-    initDataSource = addDataRowHideFields(initDataSource)
+    const { name, code, note, status, isBuildIn, file, initDataSource } = template
     return TemplateCollect.create({
       name,
       code,
@@ -41,9 +39,6 @@ export class TemplateService {
   }
 
   async update(id: string, data) {
-    if (data.initDataSource) {
-      data.initDataSource = addDataRowHideFields(data.initDataSource)
-    }
     return TemplateCollect.updateOne({
       _id: id,
     }, data)

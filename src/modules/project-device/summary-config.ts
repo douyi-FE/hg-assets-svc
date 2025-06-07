@@ -31,58 +31,89 @@ export const summaryConfig = {
   },
 }
 
-export function getSummaryData(tableData: any[], classColumns: string[], summaryColumns: string[]) {
-  const summaryGroup = {}
-  tableData.forEach((item) => {
-    const groupKey = classColumns.map(column => item[column]).join('-')
-    if (!summaryGroup[groupKey]) {
-      summaryGroup[groupKey] = [cloneDeep(item)]
-    }
-    else {
-      summaryGroup[groupKey].push(cloneDeep(item))
-    }
-  })
-  const summaryData = []
-  Object.keys(summaryGroup).forEach((key) => {
-    const group = summaryGroup[key]
-    // 把group中所有summaryColumns的值相加，回填到summaryColumns中
-    /*
-            例如：
-            group = [
-                {
-                    '物料编码': '1',
-                    '设备名称': '设备1',
-                    '规格型号': '1',
-                    '设备数量': 1,
-                },
-                {
-                    '物料编码': '1',
-                    '设备名称': '设备1',
-                    '规格型号': '1',
-                    '设备数量': 1,
-                },
-            ]
-            汇总并回填后：
-            summaryItem = [
-                {
-                    '物料编码': '1',
-                    '设备名称': '设备1',
-                    '规格型号': '1',
-                    '设备数量': 2,
-                },
-            ]
-        */
-    const summaryItem = group.reduce((acc, curr) => {
-      Object.keys(acc).forEach((column) => {
-        if (summaryColumns.includes(column)) {
-          if (acc !== curr) {
-            acc[column] += curr[column]
-          }
+export function getSummaryDataByType(projectDeviceSummary: any, classColumns: string[], summaryColumns: string[]) {
+  const summaryResult = {}
+  Object.keys(projectDeviceSummary).forEach((sheet) => {
+    const sheetData = projectDeviceSummary[sheet]
+    const tableName = Object.keys(sheetData).find(item => item.startsWith('table'))
+    if (tableName) {
+      const tableData = sheetData[tableName]
+      const summaryGroup = {}
+      tableData.forEach((item) => {
+        const groupKey = classColumns.map(column => item[column]).join('-')
+        if (!summaryGroup[groupKey]) {
+          summaryGroup[groupKey] = [cloneDeep(item)]
+        }
+        else {
+          summaryGroup[groupKey].push(cloneDeep(item))
         }
       })
-      return acc
-    }, group[0])
-    summaryData.push(summaryItem)
+      const summaryData = []
+      Object.keys(summaryGroup).forEach((key) => {
+        const group = summaryGroup[key]
+        // 把group中所有summaryColumns的值相加，回填到summaryColumns中
+        /*
+                例如：
+                group = [
+                    {
+                        '物料编码': '1',
+                        '设备名称': '设备1',
+                        '规格型号': '1',
+                        '设备数量': 1,
+                    },
+                    {
+                        '物料编码': '1',
+                        '设备名称': '设备1',
+                        '规格型号': '1',
+                        '设备数量': 1,
+                    },
+                ]
+                汇总并回填后：
+                summaryItem = [
+                    {
+                        '物料编码': '1',
+                        '设备名称': '设备1',
+                        '规格型号': '1',
+                        '设备数量': 2,
+                    },
+                ]
+            */
+        const summaryItem = group.reduce((acc, curr) => {
+          Object.keys(acc).forEach((column) => {
+            if (summaryColumns.includes(column)) {
+              if (acc !== curr) {
+                acc[column] += curr[column]
+              }
+            }
+          })
+          return acc
+        }, group[0])
+        summaryData.push(summaryItem)
+      })
+      summaryResult[sheet] = { [tableName]: summaryData }
+    }
+  })
+
+  return summaryResult
+}
+
+export function getSummaryData(projectData: any) {
+  const summaryData = {}
+  // 遍历 projectData，把每个用户的数据做汇总
+  Object.keys(projectData).forEach((user) => {
+    const userData = projectData[user]
+    Object.keys(userData).forEach((sheet) => {
+      const sheetData = userData[sheet]
+      if (summaryData[sheet]) {
+        const tableName = Object.keys(sheetData).find(item => item.startsWith('table'))
+        if (tableName) {
+          summaryData[sheet][tableName] = [...summaryData[sheet][tableName], ...cloneDeep(sheetData[tableName])]
+        }
+      }
+      else {
+        summaryData[sheet] = cloneDeep(sheetData)
+      }
+    })
   })
   return summaryData
 }

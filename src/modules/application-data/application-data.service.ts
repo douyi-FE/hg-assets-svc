@@ -34,6 +34,11 @@ export class ApplicationDataService {
         applicationData,
         updateTime: new Date(),
       }
+      // 先查询当前模板是否存在数据，存在则更新，不存在则新增
+      const existingData = await ApplicationDataCollect.findOne({ templateId }).exec()
+      if (existingData) {
+        return await ApplicationDataCollect.updateOne({ _id: existingData._id }, { $set: data }).exec()
+      }
       return await ApplicationDataCollect.create(data).then((res) => {
         return 'success'
       })
