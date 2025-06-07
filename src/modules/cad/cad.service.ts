@@ -34,7 +34,7 @@ export class CadService {
 
   // 更新制图
   async updateCadData(id: string, cadData: any) {
-    const result = await CadCollect.findByIdAndUpdate(id, cadData).exec()
+    const result = await CadCollect.findByIdAndUpdate(id, cadData, { new: false }).exec()
     return result ? result.toObject() : null
   }
 

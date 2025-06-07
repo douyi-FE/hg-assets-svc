@@ -36,8 +36,8 @@ export class CadController {
   @Post('update')
   @ApiOperation({ summary: '更新制图' })
   async updateCadData(@Body() cadData: any) {
-    const { detailId: id, projectName: name, ...rest } = cadData
-    return this.cadService.updateCadData(id, { name, ...rest })
+    const { detailId: id, projectName: name, cadFileUrl: cadPath, excelEjs: ejs } = cadData
+    return this.cadService.updateCadData(id, { name, cadPath, ejs })
   }
 
   // 删除制图
