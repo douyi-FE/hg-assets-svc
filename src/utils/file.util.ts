@@ -1,5 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { exec } from 'node:child_process'
+import { promisify } from 'node:util'
 
 import { MultipartFile } from '@fastify/multipart'
 
@@ -70,6 +72,10 @@ export function getFilePath(name: string, currentDate: string, type: string) {
   return `/upload/${currentDate}/${type}/${name}`
 }
 
+export function getCadFilePath(name: string, currentDate: string) {
+  return `/cad/${currentDate}/${name}`
+}
+
 export async function saveLocalFile(buffer: Buffer, name: string, currentDate: string, type: string) {
   const filePath = path.join(__dirname, '../../', 'public/upload/', `${currentDate}/`, `${type}/`)
   try {
@@ -82,6 +88,94 @@ export async function saveLocalFile(buffer: Buffer, name: string, currentDate: s
   }
   const writeStream = fs.createWriteStream(filePath + name)
   writeStream.write(buffer)
+}
+
+export async function saveLocalDwgFile(fileName: string, name: string, currentDate: string, type: string) {
+  const dwgFilePath = path.join(__dirname, '../../', 'public/upload/', `${currentDate}/`, `${type}/`, `${name}`)
+  const commandBasePath = path.join(__dirname, '../../', 'mxcad/')
+  const mxwebName = name.replace('.dwg', '.mxweb')
+  const mxwebFilePath = path.join(__dirname, '../../', 'public/cad/', `${currentDate}/`, `${mxwebName}`)
+
+  // 获取文件名（去掉扩展名后的部分）
+  const extName = getExtname(fileName)
+  const fileNameWithoutExt = fileName.replace(`.${extName}`, '')
+
+  // 确保目录存在
+  const uploadDir = path.dirname(dwgFilePath)
+  const cadDir = path.dirname(mxwebFilePath)
+
+  try {
+    await fs.promises.mkdir(uploadDir, { recursive: true })
+    await fs.promises.mkdir(cadDir, { recursive: true })
+
+    // 检查文件是否存在
+    await fs.promises.access(dwgFilePath, fs.constants.F_OK)
+  }
+  catch (error) {
+    // 没有该文件，报错，并结束
+    throw new Error('没有找到文件，请检查文件是否存在')
+  }
+  let commandPath = ''
+  // 判断当前运行环境是 windows 还是 linux
+  // Windows 转换 dwg 为 mxweb
+  /*
+  示例代码：
+  mxcadassembly.exe {"srcpath":"D:\test2.dwg","outpath":"D:\","outname":"test", "compression":0}
+  其中 mxcadassembly.exe 为项目本地应用，相对路径为：/mxcad/Win_x86_64/mxcadassembly.exe
+  srcpath 为 dwg 文件路径
+  outpath 为 mxweb 文件路径，本项目中存储地址为：/public/cad/`${currentDate}/`
+  outname 为 mxweb 文件名
+  compression 为压缩级别，0 为不压缩，1 为压缩
+  执行结果：
+  成功：{"code":0,"message":"ok"}
+  失败：{"code":1,"message":"read file error"}
+  */
+  if (process.platform === 'win32') {
+    // 如果是 windows，调用本地应用执行转换
+    commandPath = path.join(commandBasePath, 'Win_x86_64/mxcadassembly.exe')
+  } else {
+    // 如果是 linux，调用本地应用执行转换
+    commandPath = path.join(commandBasePath, 'Linux_x86_64/mxcadassembly')
+  }
+  const command = `${commandPath} {"srcpath":"${dwgFilePath}","outpath":"${path.dirname(mxwebFilePath)}","outname":"${mxwebName}","compression":0}`
+  const execPromise = promisify(exec)
+  try {
+    const { stdout } = await execPromise(command)
+    const result = JSON.parse(stdout)
+    if (result.code !== 0) {
+      throw new Error(result.message || '转换失败')
+    }
+    const size = fs.statSync(mxwebFilePath).size
+    return {
+      path: mxwebFilePath,
+      name: mxwebName,
+      fileName: fileNameWithoutExt + '.mxweb',
+      extName: 'mxweb',
+      type: 'mxweb',
+      size
+    }
+  } catch (error) {
+    // 如果命令执行失败，检查是否是因为非零退出码
+    if (error.stdout) {
+      try {
+        const result = JSON.parse(error.stdout)
+        if (result.code === 0) {
+          const size = fs.statSync(mxwebFilePath).size
+          return {
+            path: mxwebFilePath,
+            name: mxwebName,
+            fileName: fileNameWithoutExt + '.mxweb',
+            extName: 'mxweb',
+            type: 'mxweb',
+            size
+          }
+        }
+      } catch {
+        // 如果解析失败，继续抛出原始错误
+      }
+    }
+    throw error
+  }
 }
 
 export async function saveFile(file: MultipartFile, name: string) {

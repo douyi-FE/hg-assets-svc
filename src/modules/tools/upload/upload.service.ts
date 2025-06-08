@@ -14,6 +14,8 @@ import {
   getFileType,
   getSize,
   saveLocalFile,
+  saveLocalDwgFile,
+  getCadFilePath,
 } from '~/utils/file.util'
 
 @Injectable()
@@ -51,5 +53,46 @@ export class UploadService {
     })
 
     return path
+  }
+
+  /**
+   * 保存dwg文件，并转换为mxweb文件
+   */
+  async saveDwgFile(file: MultipartFile, userId: number): Promise<string> {
+    if (isNil(file))
+      throw new NotFoundException('Have not any file to upload!')
+
+    const fileName = file.filename
+    const size = getSize(file.file.bytesRead)
+    const extName = getExtname(fileName)
+    const type = getFileType(extName)
+    const name = fileRename(fileName)
+    const currentDate = dayjs().format('YYYY-MM-DD')
+    const path = getFilePath(name, currentDate, type)
+
+    await saveLocalFile(await file.toBuffer(), name, currentDate, type)
+    await this.storageRepository.save({
+      name,
+      fileName,
+      extName,
+      path,
+      type,
+      size,
+      userId,
+    })
+
+    const mxwebMsg = await saveLocalDwgFile(fileName, name, currentDate, type)
+    const mxwebPath = getCadFilePath(mxwebMsg.name, currentDate)
+    await this.storageRepository.save({
+      name: String(mxwebMsg.name),
+      fileName: String(mxwebMsg.fileName),
+      extName: String(mxwebMsg.extName),
+      path: String(mxwebPath),
+      type: String(mxwebMsg.type),
+      size: String(mxwebMsg.size),
+      userId: Number(userId),
+    })
+
+    return mxwebPath
   }
 }

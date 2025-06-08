@@ -50,4 +50,30 @@ export class UploadController {
       throw new BadRequestException('上传失败')
     }
   }
+
+  @Post('dwg')
+  @Perm(permissions.UPLOAD)
+  @ApiOperation({ summary: '上传并转换dwg文件' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    type: FileUploadDto,
+  })
+  async uploadDwg(@Req() req: FastifyRequest, @AuthUser() user: IAuthUser) {
+    if (!req.isMultipart())
+      throw new BadRequestException('Request is not multipart')
+
+    const file = await req.file()
+
+    try {
+      const path = await this.uploadService.saveDwgFile(file, user.uid)
+
+      return {
+        filename: path,
+      }
+    }
+    catch (error) {
+      console.log(error)
+      throw new BadRequestException('上传失败')
+    }
+  }
 }
