@@ -1,6 +1,6 @@
+import { exec } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-import { exec } from 'node:child_process'
 import { promisify } from 'node:util'
 
 import { MultipartFile } from '@fastify/multipart'
@@ -94,7 +94,7 @@ export async function saveLocalDwgFile(fileName: string, name: string, currentDa
   const dwgFilePath = path.join(__dirname, '../../', 'public/upload/', `${currentDate}/`, `${type}/`, `${name}`)
   const commandBasePath = path.join(__dirname, '../../', 'mxcad/')
   const mxwebName = name.replace('.dwg', '.mxweb')
-  const mxwebFilePath = path.join(__dirname, '../../', 'public/cad/', `${currentDate}/`, `${mxwebName}`)
+  const mxwebFilePath = path.join(__dirname, '../../', 'public/upload/', `${currentDate}/`, `${type}/`, `${mxwebName}`)
 
   // 获取文件名（去掉扩展名后的部分）
   const extName = getExtname(fileName)
@@ -133,7 +133,8 @@ export async function saveLocalDwgFile(fileName: string, name: string, currentDa
   if (process.platform === 'win32') {
     // 如果是 windows，调用本地应用执行转换
     commandPath = path.join(commandBasePath, 'Win_x86_64/mxcadassembly.exe')
-  } else {
+  }
+  else {
     // 如果是 linux，调用本地应用执行转换
     commandPath = path.join(commandBasePath, 'Linux_x86_64/mxcadassembly')
   }
@@ -149,12 +150,13 @@ export async function saveLocalDwgFile(fileName: string, name: string, currentDa
     return {
       path: mxwebFilePath,
       name: mxwebName,
-      fileName: fileNameWithoutExt + '.mxweb',
+      fileName: `${fileNameWithoutExt}.mxweb`,
       extName: 'mxweb',
       type: 'mxweb',
-      size
+      size,
     }
-  } catch (error) {
+  }
+  catch (error) {
     // 如果命令执行失败，检查是否是因为非零退出码
     if (error.stdout) {
       try {
@@ -164,13 +166,14 @@ export async function saveLocalDwgFile(fileName: string, name: string, currentDa
           return {
             path: mxwebFilePath,
             name: mxwebName,
-            fileName: fileNameWithoutExt + '.mxweb',
+            fileName: `${fileNameWithoutExt}.mxweb`,
             extName: 'mxweb',
             type: 'mxweb',
-            size
+            size,
           }
         }
-      } catch {
+      }
+      catch {
         // 如果解析失败，继续抛出原始错误
       }
     }

@@ -13,9 +13,8 @@ import {
   getFilePath,
   getFileType,
   getSize,
-  saveLocalFile,
   saveLocalDwgFile,
-  getCadFilePath,
+  saveLocalFile,
 } from '~/utils/file.util'
 
 @Injectable()
@@ -82,7 +81,7 @@ export class UploadService {
     })
 
     const mxwebMsg = await saveLocalDwgFile(fileName, name, currentDate, type)
-    const mxwebPath = getCadFilePath(mxwebMsg.name, currentDate)
+    const mxwebPath = getFilePath(mxwebMsg.name, currentDate, type)
     await this.storageRepository.save({
       name: String(mxwebMsg.name),
       fileName: String(mxwebMsg.fileName),
