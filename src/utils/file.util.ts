@@ -138,12 +138,25 @@ export async function saveLocalDwgFile(fileName: string, name: string, currentDa
     // 如果是 linux，调用本地应用执行转换
     commandPath = path.join(commandBasePath, 'Linux_x86_64/mxcadassembly')
   }
-  const command = `${commandPath} {"srcpath":"${dwgFilePath}","outpath":"${path.dirname(mxwebFilePath)}","outname":"${mxwebName}","compression":0}`
+  const jsonParams = {
+    srcpath: dwgFilePath,
+    outpath: path.dirname(mxwebFilePath),
+    outname: mxwebName,
+    compression: 0,
+  }
+  const command = `cd ${path.dirname(commandPath)} && ${commandPath} '${JSON.stringify(jsonParams)}'`
   const execPromise = promisify(exec)
   try {
     const { stdout } = await execPromise(command)
-    const result = JSON.parse(stdout)
-    if (result.code !== 0) {
+    let result: any = {}
+    try {
+      result = JSON.parse(stdout)
+    }
+    catch (error) {
+      result = stdout
+    }
+    console.log('result', result)
+    if (result.code !== 0 && !result.includes('"code":0')) {
       throw new Error(result.message || '转换失败')
     }
     const size = fs.statSync(mxwebFilePath).size
