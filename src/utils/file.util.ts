@@ -115,7 +115,6 @@ export async function saveLocalDwgFile(fileName: string, name: string, currentDa
     // 没有该文件，报错，并结束
     throw new Error('没有找到文件，请检查文件是否存在')
   }
-  let commandPath = ''
   // 判断当前运行环境是 windows 还是 linux
   // Windows 转换 dwg 为 mxweb
   /*
@@ -130,24 +129,16 @@ export async function saveLocalDwgFile(fileName: string, name: string, currentDa
   成功：{"code":0,"message":"ok"}
   失败：{"code":1,"message":"read file error"}
   */
+  let stdout: any = {}
   if (process.platform === 'win32') {
     // 如果是 windows，调用本地应用执行转换
-    commandPath = path.join(commandBasePath, 'Win_x86_64/mxcadassembly.exe')
+    stdout = await execCommandInWindows(commandBasePath, dwgFilePath, mxwebFilePath, mxwebName)
   }
   else {
     // 如果是 linux，调用本地应用执行转换
-    commandPath = path.join(commandBasePath, 'Linux_x86_64/mxcadassembly')
+    stdout = await execCommandInLinux(commandBasePath, dwgFilePath, mxwebFilePath, mxwebName)
   }
-  const jsonParams = {
-    srcpath: dwgFilePath,
-    outpath: path.dirname(mxwebFilePath),
-    outname: mxwebName,
-    compression: 0,
-  }
-  const command = `cd ${path.dirname(commandPath)} && ${commandPath} '${JSON.stringify(jsonParams)}'`
-  const execPromise = promisify(exec)
   try {
-    const { stdout } = await execPromise(command)
     let result: any = {}
     try {
       result = JSON.parse(stdout)
@@ -191,6 +182,78 @@ export async function saveLocalDwgFile(fileName: string, name: string, currentDa
       }
     }
     throw error
+  }
+}
+
+async function execCommandInWindows(commandBasePath: string, dwgFilePath: string, mxwebFilePath: string, mxwebName: string) {
+  const commandPath = path.join(commandBasePath, 'Win_x86_64/mxcadassembly.exe')
+  // 将路径中的反斜杠转换为正斜杠
+  const command = `${commandPath} '{"srcpath":"${dwgFilePath.replace(/\\/g, '/')}","outpath":"${path.dirname(mxwebFilePath).replace(/\\/g, '/')}","outname":"${mxwebName}","compression":0}'`
+  console.log('command', command)
+  const execPromise = promisify(exec)
+  try {
+    // 添加选项：使用 shell 执行命令，并设置工作目录
+    const { stdout } = await execPromise(command, {
+      shell: 'powershell.exe',
+      cwd: commandBasePath,
+    })
+
+    // 尝试解析返回的 JSON
+    try {
+      const result = JSON.parse(stdout)
+      if (result.code === 0) {
+        return stdout
+      }
+      else {
+        throw new Error(`转换失败: ${result.message || '未知错误'}`)
+      }
+    }
+    catch (parseError) {
+      console.error('解析返回结果失败:', parseError)
+      throw new Error('解析返回结果失败')
+    }
+  }
+  catch (error) {
+    // 如果 stdout 中有返回信息，尝试解析它
+    if (error.stdout) {
+      try {
+        const result = JSON.parse(error.stdout)
+        if (result.code === 0) {
+          return error.stdout
+        }
+      }
+      catch (e) {
+        // 忽略解析错误
+      }
+    }
+    // 如果 stderr 中有错误信息，使用它
+    if (error.stderr) {
+      throw new Error(error.stderr)
+    }
+    throw new Error(error.message)
+  }
+}
+
+async function execCommandInLinux(commandBasePath: string, dwgFilePath: string, mxwebFilePath: string, mxwebName: string) {
+  const commandPath = path.join(commandBasePath, 'Linux_x86_64/mxcadassembly')
+  const jsonParams = {
+    srcpath: dwgFilePath,
+    outpath: path.dirname(mxwebFilePath),
+    outname: mxwebName,
+    compression: 0,
+  }
+  const command = `cd ${path.dirname(commandPath)} && ${commandPath} '${JSON.stringify(jsonParams)}'`
+  const execPromise = promisify(exec)
+  try {
+    const { stdout } = await execPromise(command)
+    const result = JSON.parse(stdout)
+    if (result.code !== 0) {
+      throw new Error(result.message || '转换失败')
+    }
+    return stdout
+  }
+  catch (error) {
+    throw new Error(error.message)
   }
 }
 
