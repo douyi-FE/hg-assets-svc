@@ -246,10 +246,6 @@ async function execCommandInLinux(commandBasePath: string, dwgFilePath: string, 
   const execPromise = promisify(exec)
   try {
     const { stdout } = await execPromise(command)
-    const result = JSON.parse(stdout)
-    if (result.code !== 0) {
-      throw new Error(result.message || '转换失败')
-    }
     return stdout
   }
   catch (error) {
