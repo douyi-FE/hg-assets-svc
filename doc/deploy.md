@@ -12,3 +12,14 @@
 5. pnpm build
 6. pnpm prod
 7. 完成以上步骤即可打开http://113.44.53.177:7001/查看系统
+
+### 后端PM2部署
+
+1. 有修改代码或者前端资源有新拷贝的build资源则使用git命令推送到dev分支
+2. 登录113.44.53.177服务器
+3. cd /home/hg_manage_v2
+4. git pull origin dev
+5. pnpm build
+6. delete:pm2 -清除所有pm2启动的进程
+7. pnpm prod:pm2 -启动当前项目
+8. 完成以上步骤即可打开http://113.44.53.177:7001/查看系统
