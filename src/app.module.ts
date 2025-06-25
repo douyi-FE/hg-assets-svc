@@ -147,7 +147,7 @@ import { SocketModule } from './socket/socket.module'
 
     { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
-    { provide: APP_INTERCEPTOR, useFactory: () => new TimeoutInterceptor(15 * 1000) },
+    { provide: APP_INTERCEPTOR, useFactory: () => new TimeoutInterceptor(10 * 60 * 1000) },
     { provide: APP_INTERCEPTOR, useClass: IdempotenceInterceptor },
 
     { provide: APP_GUARD, useClass: JwtAuthGuard },

@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common'
-import { ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Body, Controller, Get, Post, Query, Req, BadRequestException } from '@nestjs/common'
+import { ApiOperation, ApiTags, ApiConsumes } from '@nestjs/swagger'
+import { FastifyRequest } from 'fastify'
 import { ApiSecurityAuth } from '~/common/decorators/swagger.decorator'
 import { TemplateAttachService } from './templateAttach.service'
 
@@ -11,14 +12,44 @@ export class TemplateAttachController {
 
   @Post('/attach/upload')
   @ApiOperation({ summary: '上传附件' })
-  async upload(@Body() body: any): Promise<any> {
-    const { files = [] } = body
-    const result = []
-    for (const file of files) {
-      const res = await this.templateAttachService.upload(file)
-      result.push(res)
+  @ApiConsumes('multipart/form-data', 'application/json')
+  async upload(@Req() req: FastifyRequest, @Body() body?: any): Promise<any> {
+    // 检查是否为multipart请求
+    if (req.isMultipart()) {
+      try {
+        const data = await req.file()
+        const file = data.fields.file as any
+        if (!file) {
+          throw new BadRequestException('没有找到文件')
+        }
+        
+        const fileBuffer = await file.toBuffer()
+        const fileData = {
+          fileId: (data.fields.fileId as any)?.value || '',
+          originalFileName: file.filename,
+          fileName: file.filename,
+          fileContent: fileBuffer.toString('base64'),
+          fileExtension: file.filename.split('.').pop() || '',
+          fileTime: Date.now(),
+          fileSize: fileBuffer.length,
+        }
+        
+        const result = await this.templateAttachService.upload(fileData)
+        return result
+      } catch (error) {
+        console.error('文件上传错误:', error)
+        throw new BadRequestException('文件上传失败')
+      }
+    } else {
+      // 处理JSON格式的请求（向后兼容）
+      const { files = [] } = body || {}
+      const result = []
+      for (const file of files) {
+        const res = await this.templateAttachService.upload(file)
+        result.push(res)
+      }
+      return 'success'
     }
-    return 'success'
   }
 
   @Get('/attach/download')

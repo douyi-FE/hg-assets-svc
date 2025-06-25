@@ -13,15 +13,19 @@ import { MenuModule } from '../system/menu/menu.module'
 import { RoleModule } from '../system/role/role.module'
 import { UserModule } from '../user/user.module'
 
-import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
+import { AuthController } from './controllers/auth.controller'
 import { AccountController } from './controllers/account.controller'
 import { CaptchaController } from './controllers/captcha.controller'
 import { EmailController } from './controllers/email.controller'
+import { TokenAdapterController } from './controllers/token-adapter.controller'
+import { OAuth2AdapterController } from './controllers/oauth2-adapter.controller'
 import { AccessTokenEntity } from './entities/access-token.entity'
 import { RefreshTokenEntity } from './entities/refresh-token.entity'
 import { CaptchaService } from './services/captcha.service'
 import { TokenService } from './services/token.service'
+import { TokenAdapterService } from './services/token-adapter.service'
+import { OAuth2AdapterService } from './services/oauth2-adapter.service'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { LocalStrategy } from './strategies/local.strategy'
 
@@ -30,8 +34,10 @@ const controllers = [
   AccountController,
   CaptchaController,
   EmailController,
+  TokenAdapterController,
+  OAuth2AdapterController,
 ]
-const providers = [AuthService, TokenService, CaptchaService]
+const providers = [AuthService, TokenService, CaptchaService, TokenAdapterService, OAuth2AdapterService]
 const strategies = [LocalStrategy, JwtStrategy]
 
 @Module({

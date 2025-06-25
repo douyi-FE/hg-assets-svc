@@ -315,7 +315,7 @@ export class NetDiskManageService {
     const policy = new qiniu.rs.PutPolicy({
       scope: this.qiniuConfig.bucket,
       insertOnly: 1,
-      fsizeLimit: 1024 ** 2 * 10,
+      fsizeLimit: 200 * 1024 * 1024, // 200MB
       endUser,
     })
     const uploadToken = policy.uploadToken(this.mac)

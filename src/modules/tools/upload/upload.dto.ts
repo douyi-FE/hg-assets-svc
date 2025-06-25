@@ -17,7 +17,7 @@ export class FileUploadDto {
         'image/webp',
         'image/svg+xml',
       ],
-      fileSize: 1024 * 1024 * 10,
+      fileSize: 200 * 1024 * 1024, // 200MB
     },
     {
       message: '文件类型不正确',

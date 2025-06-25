@@ -7,13 +7,18 @@ const app: FastifyAdapter = new FastifyAdapter({
   trustProxy: true,
   logger: false,
   // forceCloseConnections: true,
+  // 增加请求体大小限制到200MB
+  bodyLimit: 200 * 1024 * 1024, // 200MB
+  // 增加请求超时时间
+  connectionTimeout: 300000, // 5分钟
+  keepAliveTimeout: 300000, // 5分钟
 })
 export { app as fastifyApp }
 
 app.register(FastifyMultipart, {
   limits: {
     fields: 10, // Max number of non-file fields
-    fileSize: 1024 * 1024 * 30, // limit size 30M
+    fileSize: 200 * 1024 * 1024, // limit size 200M
     files: 5, // Max number of file fields
   },
 })
