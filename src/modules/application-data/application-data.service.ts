@@ -14,7 +14,14 @@ export class ApplicationDataService {
         .sort({ updateTime: -1 })
         .limit(1)
         .exec()
-      return results[0] ? results[0].toObject() : null
+      return results[0]
+        ? (results.map((item) => {
+            return {
+              ...item.toObject(),
+              _id: item._id.toString(),
+            }
+          }))[0]
+        : null
     }
     catch (error) {
       console.error('获取应用数据失败:', error)

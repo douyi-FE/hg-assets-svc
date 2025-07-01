@@ -26,7 +26,7 @@ const dataSourceOptions: DataSourceOptions = {
   subscribers: ['dist/modules/**/*.subscriber{.ts,.js}'],
   // 添加连接超时相关配置
   connectTimeout: 60000, // 连接超时时间，单位毫秒
-  acquireTimeout: 60000, // 获取连接超时时间，单位毫秒
+  // acquireTimeout: 60000, // 获取连接超时时间，单位毫秒
   extra: {
     connectionLimit: 10, // 连接池大小
     waitForConnections: true, // 当无连接可用时等待

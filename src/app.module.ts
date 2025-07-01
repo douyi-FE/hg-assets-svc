@@ -17,6 +17,7 @@ import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor'
 import { TransformInterceptor } from './common/interceptors/transform.interceptor'
 import { ApplicationModule } from './modules/application/application.module'
 import { ApplicationDataModule } from './modules/application-data/application-data.module'
+import { ApplicationDataHistoryModule } from './modules/application-data-history/application-data-hisotry.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard'
 import { RbacGuard } from './modules/auth/guards/rbac.guard'
@@ -121,6 +122,8 @@ import { SocketModule } from './socket/socket.module'
     ApplicationModule,
     // 应用数据管理
     ApplicationDataModule,
+    // 应用数据历史管理
+    ApplicationDataHistoryModule,
     // 开票管理
     InvoiceModule,
     // 请假管理
