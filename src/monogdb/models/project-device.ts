@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose'
 export interface IProjectDevice extends Document {
   templateId: string
   projectData: any
-  summarySheetComments: any
+  sjs: any
   type: string
   project: string
   device: string
@@ -16,7 +16,7 @@ export interface IProjectDevice extends Document {
 const projectDeviceSchema: Schema = new Schema({
   templateId: { type: String, required: true },
   projectData: { type: Object, required: true },
-  summarySheetComments: { type: Object, required: false },
+  sjs: { type: Object, required: false },
   type: { type: String, required: true },
   project: { type: String, required: true },
   device: { type: String, required: true },
