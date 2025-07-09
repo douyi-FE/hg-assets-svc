@@ -60,8 +60,8 @@ export class ApplicationDataController {
   @Perm(permissions.CREATE)
   async appendApplicationData(@Body() body: any) {
     try {
-      const { userId, templateId, applicationData } = body
-      const result = await this.ApplicationDataService.appendApplicationData(userId, templateId, applicationData)
+      const { templateId, applicationData } = body
+      const result = await this.ApplicationDataService.appendApplicationData(templateId, applicationData)
       return {
         code: 200,
         message: '追加数据成功',

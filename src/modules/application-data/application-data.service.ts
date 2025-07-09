@@ -57,7 +57,7 @@ export class ApplicationDataService {
   }
 
   // 追加数据
-  async appendApplicationData(userId: string, templateId: string, applicationData: any) {
+  async appendApplicationData(templateId: string, applicationData: any) {
     try {
       // 追加数据添加行id
       applicationData = addDataRowHideFields(applicationData)
@@ -76,7 +76,9 @@ export class ApplicationDataService {
         })
         return await ApplicationDataCollect.updateOne({ templateId }, { $set: { applicationData: latestApplicationData, updateTime: new Date() } }).exec()
       }
-      return await ApplicationDataCollect.create({ templateId, applicationData, updateTime: new Date() })
+      return await ApplicationDataCollect.create({ templateId, applicationData, updateTime: new Date() }).then((res) => {
+        return 'success'
+      })
     }
     catch (error) {
       console.error('追加数据失败:', error)

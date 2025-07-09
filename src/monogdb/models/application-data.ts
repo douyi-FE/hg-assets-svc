@@ -11,7 +11,7 @@ export interface IApplicationData extends Document {
 const applicationDataSchema: Schema = new Schema({
   templateId: { type: String, required: true },
   applicationData: { type: Object, required: true },
-  userId: { type: String, required: true },
+  userId: { type: String, required: false },
   deptId: { type: Number, required: false },
   updateTime: { type: Date, required: true },
 }, { timestamps: true })
