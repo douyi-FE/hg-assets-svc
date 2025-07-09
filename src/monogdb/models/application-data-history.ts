@@ -1,7 +1,8 @@
 import mongoose, { Document, Schema } from 'mongoose'
 
 export interface IApplicationDataHistory extends Document {
-  applicationId: string
+  tableName: string
+  tableKey: string
   name: string
   mark: string
   applicationData: any
@@ -9,7 +10,8 @@ export interface IApplicationDataHistory extends Document {
 }
 
 const applicationDataHistorySchema: Schema = new Schema({
-  applicationId: { type: String, required: true },
+  tableName: { type: String, required: true },
+  tableKey: { type: String, required: true },
   name: { type: String, required: true },
   mark: { type: String, required: false },
   applicationData: { type: Object, required: true },

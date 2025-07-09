@@ -28,8 +28,8 @@ export class ApplicationDataHistoryService {
 
   // 添加历史版本数据
   async addApplicationDataHistory(body: any) {
-    const { applicationId, name, mark, applicationData, userId } = body
-    const applicationDataHistory = await ApplicationDataHistoryCollect.create({ applicationId, name, mark, applicationData, userId }).then(() => '保存成功')
+    const { tableKey, tableName, name, mark, applicationData, userId } = body
+    const applicationDataHistory = await ApplicationDataHistoryCollect.create({ tableKey, tableName, name, mark, applicationData, userId }).then(() => '保存成功')
     return applicationDataHistory
   }
 

@@ -52,7 +52,14 @@ export class ProjectDeviceService {
         .sort({ updateTime: -1 })
         .limit(1)
         .exec()
-      const projectDevice = result[0] ? result[0].toObject() : null
+      const projectDevice = result[0]
+        ? (result.map((item) => {
+            return {
+              ...item.toObject(),
+              _id: item._id.toString(),
+            }
+          }))[0]
+        : null
       if (!projectDevice || !projectDevice.projectData) {
         return null
       }
