@@ -88,6 +88,15 @@ export class ProjectDeviceController {
     return this.ProjectDeviceService.updateProjectDeviceData(templateId, type, project, device, engineer, engineerId, projectData, sjs)
   }
 
+  // 依据UserId, type, project, device, engineer 删除项目设备数据样式文件
+  @Post('clear-styles')
+  @ApiOperation({ summary: '依据UserId, templateId, project, device, engineer, engineerId 删除项目设备数据样式文件' })
+  @Perm(permissions.UPDATE)
+  async clearProjectDeviceStyles(@Body() body: any) {
+    const { templateId, type, project, device, engineer, engineerId, userName } = body
+    return this.ProjectDeviceService.clearProjectDeviceStyles(templateId, type, project, device, engineer, engineerId, userName)
+  }
+
   // 依据UserId, type, project, device, engineer 删除项目设备数据
   @Delete('data')
   @ApiOperation({ summary: '依据UserId, type, project, device, engineer 删除项目设备数据' })

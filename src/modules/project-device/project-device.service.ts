@@ -143,4 +143,20 @@ export class ProjectDeviceService {
       throw error
     }
   }
+
+  // 根据userId, type, project, device, engineer 删除项目设备数据样式文件
+  async clearProjectDeviceStyles(templateId: string, type: string, project: string, device: string, engineer: string, engineerId: string, userName: string) {
+    try {
+      const projectData = await ProjectDeviceCollect.findOne({ templateId, type, project, device, engineer, engineerId }).exec()
+      if (!projectData || !projectData.projectData[userName]) {
+        return null
+      }
+      projectData.projectData[userName]._sjs = null
+      return await ProjectDeviceCollect.updateOne({ templateId, type, project, device, engineer, engineerId }, { $set: { projectData: projectData.projectData } }).exec()
+    }
+    catch (error) {
+      console.error('删除项目设备数据样式文件失败:', error)
+      throw error
+    }
+  }
 }
