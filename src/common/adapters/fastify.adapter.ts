@@ -1,6 +1,7 @@
 import FastifyCookie from '@fastify/cookie'
 import FastifyMultipart from '@fastify/multipart'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
+import fastifyCompress from '@fastify/compress'
 
 const app: FastifyAdapter = new FastifyAdapter({
   // @see https://www.fastify.io/docs/latest/Reference/Server/#trustproxy
@@ -14,6 +15,20 @@ const app: FastifyAdapter = new FastifyAdapter({
   keepAliveTimeout: 300000, // 5分钟
 })
 export { app as fastifyApp }
+
+// 注册压缩插件
+app.register(fastifyCompress, {
+  // 启用 gzip 压缩
+  global: true,
+  // 压缩阈值：1KB 以上的响应才进行压缩
+  threshold: 1024,
+  // 支持的压缩类型
+  encodings: ['gzip', 'deflate'],
+  // 自定义压缩选项
+  zlibOptions: {
+    level: 6, // 压缩级别 (1-9, 9为最高压缩率但最慢)
+  },
+})
 
 app.register(FastifyMultipart, {
   limits: {

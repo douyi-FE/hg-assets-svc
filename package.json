@@ -49,6 +49,7 @@
     "docker:logs": "docker compose --env-file .env --env-file .env.production logs -f"
   },
   "dependencies": {
+    "@fastify/compress": "^7.0.0",
     "@fastify/cookie": "^9.4.0",
     "@fastify/multipart": "^8.3.0",
     "@fastify/static": "^7.0.4",
@@ -82,6 +83,7 @@
     "cache-manager-ioredis-yet": "^2.1.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "compression": "^1.8.1",
     "cron": "^3.1.7",
     "cron-parser": "^4.9.0",
     "crypto-js": "^4.2.0",

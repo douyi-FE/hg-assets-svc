@@ -31,30 +31,6 @@ export class ProjectDeviceController {
     return this.ProjectDeviceService.getProjectDeviceData(query)
   }
 
-  // // 依据UserId, type, project, device, engineer 新增项目设备数据
-  // @Post('data')
-  // @ApiOperation({ summary: '依据 type, project, device, engineer 新增项目设备数据' })
-  // @Perm(permissions.CREATE)
-  // async addProjectDeviceData(@Body() body: any) {
-  //   try {
-  //     const { templateId, type, project, device, engineer, engineerId, projectData, summarySheetComments } = body
-  //     const result = await this.ProjectDeviceService.addProjectDeviceData(templateId, type, project, device, engineer, engineerId, projectData, summarySheetComments)
-  //     return {
-  //       code: 200,
-  //       message: '新增项目设备数据成功',
-  //       data: result,
-  //     }
-  //   }
-  //   catch (error) {
-  //     console.error('新增项目设备数据失败:', error)
-  //     return {
-  //       code: 500,
-  //       message: error.message || '新增项目设备数据失败',
-  //       data: null,
-  //     }
-  //   }
-  // }
-
   // 依据UserId, type, project, device, engineer 新增项目设备数据
   @Post('data')
   @ApiOperation({ summary: '依据 type, project, device, engineer 新增项目设备数据' })
@@ -104,5 +80,13 @@ export class ProjectDeviceController {
   async deleteProjectDeviceData(@Body() body: any) {
     const { templateId, type, project, device, engineer, engineerId } = body
     return this.ProjectDeviceService.deleteProjectDeviceData(templateId, type, project, device, engineer, engineerId)
+  }
+
+  // 删除所有项目设备数据样式文件（admin）
+  @Post('clear-all-styles')
+  @ApiOperation({ summary: '删除所有项目设备数据样式文件（admin）' })
+  @Perm(permissions.DELETE)
+  async clearAllProjectDeviceStyles() {
+    return this.ProjectDeviceService.clearAllProjectDeviceStyles()
   }
 }
