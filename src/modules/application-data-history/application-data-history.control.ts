@@ -30,6 +30,14 @@ export class ApplicationDataHistoryController {
     return this.ApplicationDataHistoryService.getApplicationHistoryList(query)
   }
 
+  // 依据ID和查询条件模糊检索历史版本数据
+  @Get('search')
+  @ApiOperation({ summary: '依据ID和查询条件模糊检索历史版本数据' })
+  @Perm(permissions.READ)
+  async getApplicationHistoryListByID(@Query() query: any) {
+    return this.ApplicationDataHistoryService.getApplicationHistoryListByID(query)
+  }
+
   // 添加历史版本数据
   @Post('data')
   @ApiOperation({ summary: '添加历史版本数据' })
