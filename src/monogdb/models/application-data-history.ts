@@ -6,6 +6,7 @@ export interface IApplicationDataHistory extends Document {
   name: string
   mark: string
   applicationData: any
+  ejs: string
   userId: string
 }
 
@@ -15,6 +16,7 @@ const applicationDataHistorySchema: Schema = new Schema({
   name: { type: String, required: true },
   mark: { type: String, required: false },
   applicationData: { type: Object, required: true },
+  ejs: { type: String, required: false },
   userId: { type: String, required: true },
 }, { timestamps: true })
 
