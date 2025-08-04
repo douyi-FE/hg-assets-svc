@@ -177,4 +177,57 @@ export class ApplicationDataService {
       throw error
     }
   }
+
+  // 查询模板字段多列字典
+  async getTemplateFieldMultiDict(query: any) {
+    try {
+      const { templateId, dictName } = query
+      const results = await ApplicationDataCollect
+        .find({ templateId })
+        .sort({ updateTime: -1 })
+        .limit(1)
+        .exec()
+      const dictData = results[0] ? results[0].toObject() : null
+      if (dictData) {
+        let { applicationData } = dictData
+        if (typeof applicationData === 'string') {
+          try {
+            applicationData = JSON.parse(applicationData)
+          }
+          catch (error) {
+            console.error('解析应用数据失败:', error)
+            throw error
+          }
+        }
+        if (applicationData) {
+          let filteredDictData = []
+          // 只取第一个sheet的数据
+          const sheetName = Object.keys(applicationData)[0]
+          if (sheetName) {
+            const sheetData = applicationData[sheetName]
+            Object.keys(sheetData).forEach((key) => {
+              if (key.startsWith('table')) {
+                filteredDictData = sheetData[key]
+              }
+            })
+          }
+          if (filteredDictData) {
+            if (dictName) {
+              // 从 filteredDictData 数组中根据 ‘模板名称’ 属性过滤出对应的字典数据
+              const dictData = filteredDictData.filter((item: any) => {
+                return item['模板名称'] === dictName
+              })
+              return dictData
+            }
+            return filteredDictData
+          }
+        }
+      }
+      return []
+    }
+    catch (error) {
+      console.error('获取模板字段多列字典数据失败:', error)
+      throw error
+    }
+  }
 }

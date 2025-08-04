@@ -103,4 +103,12 @@ export class ApplicationDataController {
   async getTemplateFieldDict(@Query() query: any) {
     return this.ApplicationDataService.getTemplateFieldDict(query)
   }
+
+  // 查询模板字段多列字典
+  @Get('template-field-multi-dict')
+  @ApiOperation({ summary: '查询模板字段多列字典' })
+  @Perm(permissions.READ)
+  async getTemplateFieldMultiDict(@Query() query: any) {
+    return this.ApplicationDataService.getTemplateFieldMultiDict(query)
+  }
 }
