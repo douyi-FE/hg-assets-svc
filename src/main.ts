@@ -22,7 +22,6 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor'
 import { isDev, isMainProcess } from './global/env'
 import { setupSwagger } from './setup-swagger'
 import { LoggerService } from './shared/logger/logger.service'
-import { workFlowService } from './work-flow'
 import './monogdb/connect'
 
 declare const module: any
@@ -79,7 +78,7 @@ async function bootstrap() {
   setupSwagger(app, configService)
 
   // 初始化工作流
-  await workFlowService.initializeFlow()
+  // await workFlowService.initializeFlow()
 
   await app.listen(port, '0.0.0.0', async () => {
     app.useLogger(app.get(LoggerService))
