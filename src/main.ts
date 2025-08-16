@@ -10,9 +10,7 @@ import {
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
-
 import { NestFastifyApplication } from '@nestjs/platform-fastify'
-
 import { useContainer } from 'class-validator'
 
 import { AppModule } from './app.module'
@@ -36,6 +34,21 @@ async function bootstrap() {
       // forceCloseConnections: true,
     },
   )
+
+  const distDir = path.join(__dirname, '..', 'public', 'dist-yudao')
+  const fastifyInstance = app.getHttpAdapter().getInstance()
+  fastifyInstance.addHook('preHandler', async (req, reply) => {
+    const url = req.url.split('?')[0]
+
+    // 只处理 /dist-yudao 前缀，且没有文件扩展名的请求
+    if (
+      url.startsWith('/dist-yudao')
+      && !url.startsWith('/admin-api')
+      && !/\.[^/]+$/.test(url)
+    ) {
+      return (reply as any).sendFile('index.html', distDir)
+    }
+  })
 
   const configService = app.get(ConfigService<ConfigKeyPaths>)
 
