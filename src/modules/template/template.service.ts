@@ -26,10 +26,11 @@ export class TemplateService {
   }
 
   async create(template: any) {
-    const { name, code, note, status, isBuildIn, file, initDataSource } = template
+    const { name, code, flowPath = '', note, status, isBuildIn, file, initDataSource } = template
     return TemplateCollect.create({
       name,
       code,
+      flowPath,
       note,
       status: Number(status),
       isBuildIn: isBuildIn === 'true',

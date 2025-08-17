@@ -56,6 +56,7 @@ export class ApplicationService {
           {
             $set: {
               name: application.name,
+              flowPath: application.flowPath,
               icon: application.icon,
               description: application.description,
               content: application.content,

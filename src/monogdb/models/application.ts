@@ -5,6 +5,7 @@ export interface IApplication extends Document {
   isBuildIn: boolean
   content: string
   name: string
+  flowPath: string
   icon: string
   description: string
   initDataSource: any
@@ -15,6 +16,7 @@ const applicationSchema: Schema = new Schema({
   isBuildIn: { type: Boolean, required: true },
   content: { type: String, required: true },
   name: { type: String, required: true },
+  flowPath: { type: String, required: false },
   icon: { type: String, required: false },
   description: { type: String, required: false },
   initDataSource: { type: Object, required: false },

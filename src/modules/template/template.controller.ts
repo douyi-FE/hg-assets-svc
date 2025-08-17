@@ -65,10 +65,11 @@ export class TemplateController {
   @ApiOperation({ summary: '新增excel模板' })
   @Perm(permissions.CREATE)
   async create(@Body() body: any) {
-    const { name, code, isBuildIn, status, note, initDataSource, sjs } = body
+    const { name, code, flowPath = '', isBuildIn, status, note, initDataSource, sjs } = body
     const parmas = {
       name,
       code,
+      flowPath,
       isBuildIn,
       note,
       status,
@@ -87,10 +88,11 @@ export class TemplateController {
   @ApiOperation({ summary: '更新excel模板' })
   @Perm(permissions.CREATE)
   async update(@Body() body: any) {
-    const { id, name, code, isBuildIn, status, note, initDataSource, sjs } = body
+    const { id, name, code, flowPath = '', isBuildIn, status, note, initDataSource, sjs } = body
     const parmas = {
       name,
       code,
+      flowPath,
       isBuildIn,
       note,
       // status,
